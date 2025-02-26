@@ -17,15 +17,38 @@
 
 import bpy
 
+class WM_OT_ExportPaths(bpy.types.Operator):
+    bl_idname = "wm.vivify_export_paths"
+    bl_label = "Export Paths"
 
-class MYADDON_PT_MyPanel(bpy.types.Panel):
-    bl_label = "My Panel"
-    bl_idname = "MYADDON_PT_MyPanel"
+    def execute(self, context):
+        self.report({'INFO'}, "Hello World")
+        return {'FINISHED'}
+
+class WM_OT_AddPathData(bpy.types.Operator):
+    bl_idname = "wm.vivify_add_path_data"
+    bl_label = "Add Path Data"
+
+    def execute(self, context):
+        selected_objects = bpy.context.selected_objects
+
+        if len(selected_objects) == 0:
+            self.report({'ERROR'}, "No objects selected")
+            return {'CANCELLED'}
+
+        self.report({'INFO'}, "Hello World (yeah)")
+        return {'FINISHED'}
+
+class MYADDON_PT_VivifyPanel(bpy.types.Panel):
+    bl_label = "Vivify"
+    bl_idname = "MYADDON_PT_VivifyPanel"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
-    bl_category = "My Addon"
+    bl_category = "Vivify"
 
     def draw(self, context):
         layout = self.layout
 
-        layout.label(text="Hello world!")
+        layout.label(text="Hey :D")
+        layout.operator("wm.vivify_add_path_data", text="Add Path Data")
+        layout.operator("wm.vivify_export_paths", text="Export Paths")

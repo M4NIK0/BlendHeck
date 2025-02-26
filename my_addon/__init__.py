@@ -16,10 +16,10 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 bl_info = {
-    "name": "My Add-on",
-    "author": "Author Name",
-    "description": "Short description of my add-on",
-    "blender": (3, 0, 0),
+    "name": "BlendHeck",
+    "author": "Nyaniko~",
+    "description": "A Vivify preview/editor for Blender",
+    "blender": (4, 3, 0),
     "version": (0, 0, 1),
     "location": "Sidebar",
     "category": "Object",

@@ -30,11 +30,18 @@ class WM_OT_AddPathData(bpy.types.Operator):
     bl_label = "Add Path Data"
 
     def execute(self, context):
+        authorized_obj_types = ['MESH', 'EMPTY']
         selected_objects = bpy.context.selected_objects
 
         if len(selected_objects) == 0:
             self.report({'ERROR'}, "No objects selected")
             return {'CANCELLED'}
+
+        # Check object types
+        for obj in selected_objects:
+            if obj.type not in authorized_obj_types:
+                self.report({'ERROR'}, f"Object {obj.name} is of type {obj.type}. Please select only mesh objects.")
+                return {'CANCELLED'}
 
         self.report({'INFO'}, "Hello World (yeah)")
         return {'FINISHED'}

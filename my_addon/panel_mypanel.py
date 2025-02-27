@@ -43,7 +43,12 @@ class WM_OT_ExportPaths(bpy.types.Operator):
     bl_category = "Vivify"
 
     def execute(self, context):
-        self.report({'INFO'}, "Hello World")
+        for obj in bpy.data.objects:
+            self.report({'INFO'}, f"Object {obj.name} has {len(obj.my_data.my_data_array)} data items")
+            if len(obj.my_data.my_data_array) > 0:
+                for i, data in enumerate(obj.my_data.my_data_array):
+                    self.report({'INFO'}, f"Data {i}: {data.point_definition_name}")
+
         return {'FINISHED'}
 
 class WM_OT_AddPathData(bpy.types.Operator):
@@ -51,18 +56,11 @@ class WM_OT_AddPathData(bpy.types.Operator):
     bl_label = "Add Path Data"
 
     def execute(self, context):
-        authorized_obj_types = ['MESH', 'EMPTY']
         selected_objects = bpy.context.selected_objects
 
         if len(selected_objects) == 0:
             self.report({'ERROR'}, "No objects selected")
             return {'CANCELLED'}
-
-        # Check object types
-        for obj in selected_objects:
-            if obj.type not in authorized_obj_types:
-                self.report({'ERROR'}, f"Object {obj.name} is of type {obj.type}. Please select only mesh objects.")
-                return {'CANCELLED'}
 
         # Add data to selected objects
         for obj in selected_objects:
@@ -125,7 +123,7 @@ class MYADDON_PT_VivifyPanel(bpy.types.Panel):
         if context.selected_objects:
             layout.label(text="Selected objects:")
             for obj in context.selected_objects:
-                layout.label(text=obj.name + " (Invalid type)" if obj.type != 'MESH' else obj.name)
+                layout.label(text=obj.name)
 
         if len(context.selected_objects) > 0:
             sel_index = 0

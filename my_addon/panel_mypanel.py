@@ -348,6 +348,16 @@ class MYADDON_PT_VivifyPathsPanel(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
         if len(context.selected_objects) > 0:
+            # Check if there is any data to display
+            has_display = False
+            for current_selected_object in context.selected_objects:
+                if len(current_selected_object.my_data.my_data_array) > 0:
+                    has_display = True
+                    break
+            if not has_display:
+                layout.label(text="No data to display")
+                return
+
             sel_index = 0
             for current_selected_object in context.selected_objects:
                 for i, data in enumerate(current_selected_object.my_data.my_data_array):

@@ -38,8 +38,9 @@ class Point:
 
 class PositionPath:
     points: list[Point] = []
+    name: str = "Animation"
 
-    def __init__(self, points: list[Point]):
+    def __init__(self, points: list[Point], name: str):
         self.points = points
 
     def __str__(self):
@@ -62,6 +63,7 @@ class VivifyPropArray(bpy.types.PropertyGroup):
     my_data_array: bpy.props.CollectionProperty(type=VivifyProp)
 
 def export_object_path_curve_pos(obj, path: VivifyProp, operator=None):
+    localtransforms = False # TODO: add some stuff to the panel parameters
     points = []
     min = path.start_frame
     max = path.end_frame
@@ -79,13 +81,17 @@ def export_object_path_curve_pos(obj, path: VivifyProp, operator=None):
     for i in range(min, max + int((max - min) / path.steps), int((max - min) / path.steps)):
         current_animation_frame = round((i - min) / (max - min), 6)
         bpy.context.scene.frame_set(i)
-        ol = obj.matrix_world.to_translation()
+        ol = None
+        if localtransforms:
+            ol = obj.location
+        else:
+            ol = obj.matrix_world.to_translation()
         points.append(Point(x=ol.x, y=ol.y, z=ol.z, time=current_animation_frame))
 
     if operator:
         operator.report({'INFO'}, f"Exported {len(points)} points for object {obj.name} with position curve {path.point_definition_name}")
 
-    return PositionPath(points)
+    return PositionPath(points, path.point_definition_name + "_pos")
 
 bpy.utils.register_class(VivifyProp)
 bpy.utils.register_class(VivifyPropArray)

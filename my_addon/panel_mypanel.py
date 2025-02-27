@@ -39,7 +39,21 @@ bpy.types.Object.my_data = bpy.props.PointerProperty(type=VivifyPropArray)
 
 class WM_OT_ExportPaths(bpy.types.Operator):
     bl_idname = "wm.vivify_export_paths"
-    bl_label = "Export Paths"
+    bl_label = "Export All Paths"
+    bl_category = "Vivify"
+
+    def execute(self, context):
+        for obj in bpy.data.objects:
+            self.report({'INFO'}, f"Object {obj.name} has {len(obj.my_data.my_data_array)} data items")
+            if len(obj.my_data.my_data_array) > 0:
+                for i, data in enumerate(obj.my_data.my_data_array):
+                    self.report({'INFO'}, f"Data {i}: {data.point_definition_name}")
+
+        return {'FINISHED'}
+
+class WM_OT_ExportSelectedPaths(bpy.types.Operator):
+    bl_idname = "wm.vivify_export_paths_selected"
+    bl_label = "Export Selected Paths"
     bl_category = "Vivify"
 
     def execute(self, context):
@@ -118,7 +132,8 @@ class MYADDON_PT_VivifyPanel(bpy.types.Panel):
         layout = self.layout
 
         layout.operator("wm.vivify_add_path_data", text="Add Path Data")
-        layout.operator("wm.vivify_export_paths", text="Export Paths")
+        layout.operator("wm.vivify_export_paths", text="Export All Paths")
+        layout.operator("wm.vivify_export_paths_selected", text="Export Selected Paths")
 
         if context.selected_objects:
             layout.label(text="Selected objects:")

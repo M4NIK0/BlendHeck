@@ -34,7 +34,7 @@ class Point:
         self.time = time
 
     def __str__(self):
-        return f"[{self.x:.{self.precision}f},{self.y:.{self.precision}f},{self.z:.{self.precision}f}" + (f",\"{self.easing}\"" if self.easing else "") + f",{self.time}]"
+        return f"[{self.x:.{self.precision}f},{self.y:.{self.precision}f},{self.z:.{self.precision}f},{self.time}" + (f",\"{self.easing}\"" if self.easing else "") + "]"
 
 class PositionPath:
     points: list[Point] = []

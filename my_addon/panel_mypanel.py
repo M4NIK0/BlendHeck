@@ -42,6 +42,7 @@ class PositionPath:
 
     def __init__(self, points: list[Point], name: str):
         self.points = points
+        self.name = name
 
     def __str__(self):
         return "[" + ",".join([str(p) for p in self.points]) + "]"
@@ -52,6 +53,7 @@ class RotationPath:
 
     def __init__(self, points: list[Point], name: str):
         self.points = points
+        self.name = name
 
     def __str__(self):
         return "[" + ",".join([str(p) for p in self.points]) + "]"
@@ -62,6 +64,7 @@ class ScalePath:
 
     def __init__(self, points: list[Point], name: str):
         self.points = points
+        self.name = name
 
     def __str__(self):
         return "[" + ",".join([str(p) for p in self.points]) + "]"
@@ -202,31 +205,56 @@ class WM_OT_ExportPaths(bpy.types.Operator):
     bl_category = "Vivify"
 
     def execute(self, context):
+        if not context.scene.vivify_export_path:
+            self.report({'ERROR'}, "No export path set")
+            return {'CANCELLED'}
+
+        exported_positions = []
+        exported_rotations = []
+        exported_scales = []
+
         for obj in bpy.data.objects:
             self.report({'INFO'}, f"Object {obj.name} has {len(obj.my_data.my_data_array)} data items")
             if len(obj.my_data.my_data_array) > 0:
                 for i, data in enumerate(obj.my_data.my_data_array):
                     if data.export:
-                        pospath = None
-                        rotpath = None
-                        scalepath = None
                         try:
                             if data.export_position:
                                 pospath = export_object_path_curve_pos(obj, data, self)
+                                exported_positions.append(pospath)
                         except Exception as e:
                             self.report({'ERROR'}, f"Could not export position data for object {obj.name}: {e}")
                         try:
                             if data.export_rotation:
                                 rotpath = export_object_path_curve_rot(obj, data, self)
+                                exported_rotations.append(rotpath)
                         except Exception as e:
                             self.report({'ERROR'}, f"Could not export rotation data for object {obj.name}: {e}")
                         try:
                             if data.export_scale:
                                 scalepath = export_object_path_curve_scale(obj, data, self)
+                                exported_scales.append(scalepath)
                         except Exception as e:
                             self.report({'ERROR'}, f"Could not export scale data for object {obj.name}: {e}")
                     else:
                         self.report({'INFO'}, f"Skipping export of data {data.point_definition_name} for object {obj.name}")
+
+        file_path = context.scene.vivify_export_path
+        with (open(file_path, "w") as f):
+            final_string = ""
+            ind = 0
+            for pos in exported_positions:
+                final_string += '"' + pos.name + '":' + str(pos) + ("," if ind < len(exported_positions) - 1 or len(exported_rotations) > 0 or len(exported_scales) > 0 else "")
+                ind += 1
+            ind = 0
+            for rot in exported_rotations:
+                final_string += '"' + rot.name + '":' + str(rot) + ("," if ind < len(exported_rotations) - 1 or len(exported_scales) > 0 else "")
+                ind += 1
+            ind = 0
+            for scale in exported_scales:
+                final_string += '"' + scale.name + '":' + str(scale) + ("," if ind < len(exported_scales) - 1 else "")
+                ind += 1
+            f.write("{" + final_string + "}")
 
         return {'FINISHED'}
 
@@ -236,31 +264,56 @@ class WM_OT_ExportSelectedPaths(bpy.types.Operator):
     bl_category = "Vivify"
 
     def execute(self, context):
-        for obj in bpy.data.objects:
+        if not context.scene.vivify_export_path:
+            self.report({'ERROR'}, "No export path set")
+            return {'CANCELLED'}
+
+        exported_positions = []
+        exported_rotations = []
+        exported_scales = []
+
+        for obj in bpy.context.selected_objects:
             self.report({'INFO'}, f"Object {obj.name} has {len(obj.my_data.my_data_array)} data items")
             if len(obj.my_data.my_data_array) > 0:
                 for i, data in enumerate(obj.my_data.my_data_array):
                     if data.export:
-                        pospath = None
-                        rotpath = None
-                        scalepath = None
                         try:
                             if data.export_position:
                                 pospath = export_object_path_curve_pos(obj, data, self)
+                                exported_positions.append(pospath)
                         except Exception as e:
                             self.report({'ERROR'}, f"Could not export position data for object {obj.name}: {e}")
                         try:
                             if data.export_rotation:
                                 rotpath = export_object_path_curve_rot(obj, data, self)
+                                exported_rotations.append(rotpath)
                         except Exception as e:
                             self.report({'ERROR'}, f"Could not export rotation data for object {obj.name}: {e}")
                         try:
                             if data.export_scale:
                                 scalepath = export_object_path_curve_scale(obj, data, self)
+                                exported_scales.append(scalepath)
                         except Exception as e:
                             self.report({'ERROR'}, f"Could not export scale data for object {obj.name}: {e}")
                     else:
                         self.report({'INFO'}, f"Skipping export of data {data.point_definition_name} for object {obj.name}")
+
+        file_path = context.scene.vivify_export_path
+        with (open(file_path, "w") as f):
+            final_string = ""
+            ind = 0
+            for pos in exported_positions:
+                final_string += '"' + pos.name + '":' + str(pos) + ("," if ind < len(exported_positions) - 1 or len(exported_rotations) > 0 or len(exported_scales) > 0 else "")
+                ind += 1
+            ind = 0
+            for rot in exported_rotations:
+                final_string += '"' + rot.name + '":' + str(rot) + ("," if ind < len(exported_rotations) - 1 or len(exported_scales) > 0 else "")
+                ind += 1
+            ind = 0
+            for scale in exported_scales:
+                final_string += '"' + scale.name + '":' + str(scale) + ("," if ind < len(exported_scales) - 1 else "")
+                ind += 1
+            f.write("{" + final_string + "}")
 
         return {'FINISHED'}
 

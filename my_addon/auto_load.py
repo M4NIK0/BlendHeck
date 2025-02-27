@@ -53,6 +53,11 @@ def init():
 
 def register():
     bpy.types.TOPBAR_MT_editor_menus.append(draw_vivify_menu)
+    bpy.types.Scene.vivify_export_path = bpy.props.StringProperty(
+        name="Export File Path",
+        description="Path to export the data",
+        subtype='FILE_PATH'
+    )
     if ordered_classes is not None:
         for cls in ordered_classes:
             bpy.utils.register_class(cls)
@@ -67,6 +72,7 @@ def register():
 
 def unregister():
     bpy.types.TOPBAR_MT_editor_menus.remove(draw_vivify_menu)
+    del bpy.types.Scene.vivify_export_path
     if ordered_classes is not None:
         for cls in reversed(ordered_classes):
             bpy.utils.unregister_class(cls)

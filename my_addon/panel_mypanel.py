@@ -46,6 +46,26 @@ class PositionPath:
     def __str__(self):
         return "[" + ",".join([str(p) for p in self.points]) + "]"
 
+class RotationPath:
+    points: list[Point] = []
+    name: str = "Animation"
+
+    def __init__(self, points: list[Point], name: str):
+        self.points = points
+
+    def __str__(self):
+        return "[" + ",".join([str(p) for p in self.points]) + "]"
+
+class ScalePath:
+    points: list[Point] = []
+    name: str = "Animation"
+
+    def __init__(self, points: list[Point], name: str):
+        self.points = points
+
+    def __str__(self):
+        return "[" + ",".join([str(p) for p in self.points]) + "]"
+
 class VivifyProp(bpy.types.PropertyGroup):
     point_definition_name: bpy.props.StringProperty(name="Name", default="Animation")
     export: bpy.props.BoolProperty(name="Export", default=True)
@@ -93,9 +113,88 @@ def export_object_path_curve_pos(obj, path: VivifyProp, operator=None):
 
     return PositionPath(points, path.point_definition_name + "_pos")
 
+def export_object_path_curve_rot(obj, path: VivifyProp, operator=None):
+    localtransforms = False # TODO: add some stuff to the panel parameters
+    points = []
+    min = path.start_frame
+    max = path.end_frame
+
+    if min > max:
+        if operator:
+            operator.report({'ERROR'}, "Start frame must be less than end frame")
+        return None
+
+    if int((max - min) / path.steps) == 0:
+        if operator:
+            operator.report({'ERROR'}, "Steps must be less than the range of frames")
+        return None
+
+    for i in range(min, max + int((max - min) / path.steps), int((max - min) / path.steps)):
+        current_animation_frame = round((i - min) / (max - min), 6)
+        bpy.context.scene.frame_set(i)
+        ol = None
+        if localtransforms:
+            ol = obj.rotation_euler
+        else:
+            ol = obj.matrix_world.to_euler()
+        points.append(Point(x=ol.x, y=ol.y, z=ol.z, time=current_animation_frame))
+
+    if operator:
+        operator.report({'INFO'}, f"Exported {len(points)} points for object {obj.name} with rotation curve {path.point_definition_name}")
+
+    return RotationPath(points, path.point_definition_name + "_rot")
+
+def export_object_path_curve_scale(obj, path: VivifyProp, operator=None):
+    localtransforms = False # TODO: add some stuff to the panel parameters
+    points = []
+    min = path.start_frame
+    max = path.end_frame
+
+    if min > max:
+        if operator:
+            operator.report({'ERROR'}, "Start frame must be less than end frame")
+        return None
+
+    if int((max - min) / path.steps) == 0:
+        if operator:
+            operator.report({'ERROR'}, "Steps must be less than the range of frames")
+        return None
+
+    for i in range(min, max + int((max - min) / path.steps), int((max - min) / path.steps)):
+        current_animation_frame = round((i - min) / (max - min), 6)
+        bpy.context.scene.frame_set(i)
+        ol = None
+        if localtransforms:
+            ol = obj.scale
+        else:
+            ol = obj.matrix_world.to_scale()
+        points.append(Point(x=ol.x, y=ol.y, z=ol.z, time=current_animation_frame))
+
+    if operator:
+        operator.report({'INFO'}, f"Exported {len(points)} points for object {obj.name} with scale curve {path.point_definition_name}")
+
+    return ScalePath(points, path.point_definition_name + "_scale")
+
 bpy.utils.register_class(VivifyProp)
 bpy.utils.register_class(VivifyPropArray)
 bpy.types.Object.my_data = bpy.props.PointerProperty(type=VivifyPropArray)
+
+# class WM_OT_SelectExportPath(bpy.types.Operator):
+#     bl_idname = "wm.select_export_path"
+#     bl_label = "Select Export Path"
+#     bl_description = "Choose a file path for exporting data"
+#
+#     filepath: bpy.props.StringProperty(subtype="FILE_PATH")
+#
+#     def execute(self, context):
+#         # Store the selected file path in the global property
+#         context.scene.vivify_export_path = self.filepath
+#         self.report({'INFO'}, f"Export path set to: {self.filepath}")
+#         return {'FINISHED'}
+#
+#     def invoke(self, context, event):
+#         context.window_manager.fileselect_add(self)
+#         return {'RUNNING_MODAL'}
 
 class WM_OT_ExportPaths(bpy.types.Operator):
     bl_idname = "wm.vivify_export_paths"
@@ -103,20 +202,31 @@ class WM_OT_ExportPaths(bpy.types.Operator):
     bl_category = "Vivify"
 
     def execute(self, context):
-        exported = []
         for obj in bpy.data.objects:
             self.report({'INFO'}, f"Object {obj.name} has {len(obj.my_data.my_data_array)} data items")
             if len(obj.my_data.my_data_array) > 0:
                 for i, data in enumerate(obj.my_data.my_data_array):
-                    res = export_object_path_curve_pos(obj, data, self)
-                    if res:
-                        exported.append(res)
+                    if data.export:
+                        pospath = None
+                        rotpath = None
+                        scalepath = None
+                        try:
+                            if data.export_position:
+                                pospath = export_object_path_curve_pos(obj, data, self)
+                        except Exception as e:
+                            self.report({'ERROR'}, f"Could not export position data for object {obj.name}: {e}")
+                        try:
+                            if data.export_rotation:
+                                rotpath = export_object_path_curve_rot(obj, data, self)
+                        except Exception as e:
+                            self.report({'ERROR'}, f"Could not export rotation data for object {obj.name}: {e}")
+                        try:
+                            if data.export_scale:
+                                scalepath = export_object_path_curve_scale(obj, data, self)
+                        except Exception as e:
+                            self.report({'ERROR'}, f"Could not export scale data for object {obj.name}: {e}")
                     else:
-                        self.report({'ERROR'}, f"Could not export path for object {obj.name} with data {data.point_definition_name}")
-
-        self.report({'INFO'}, f"Exported {len(exported)} paths")
-        for i in exported:
-            self.report({'INFO'}, str(i))
+                        self.report({'INFO'}, f"Skipping export of data {data.point_definition_name} for object {obj.name}")
 
         return {'FINISHED'}
 
@@ -130,7 +240,27 @@ class WM_OT_ExportSelectedPaths(bpy.types.Operator):
             self.report({'INFO'}, f"Object {obj.name} has {len(obj.my_data.my_data_array)} data items")
             if len(obj.my_data.my_data_array) > 0:
                 for i, data in enumerate(obj.my_data.my_data_array):
-                    export_object_path_curve_pos(obj, data, self)
+                    if data.export:
+                        pospath = None
+                        rotpath = None
+                        scalepath = None
+                        try:
+                            if data.export_position:
+                                pospath = export_object_path_curve_pos(obj, data, self)
+                        except Exception as e:
+                            self.report({'ERROR'}, f"Could not export position data for object {obj.name}: {e}")
+                        try:
+                            if data.export_rotation:
+                                rotpath = export_object_path_curve_rot(obj, data, self)
+                        except Exception as e:
+                            self.report({'ERROR'}, f"Could not export rotation data for object {obj.name}: {e}")
+                        try:
+                            if data.export_scale:
+                                scalepath = export_object_path_curve_scale(obj, data, self)
+                        except Exception as e:
+                            self.report({'ERROR'}, f"Could not export scale data for object {obj.name}: {e}")
+                    else:
+                        self.report({'INFO'}, f"Skipping export of data {data.point_definition_name} for object {obj.name}")
 
         return {'FINISHED'}
 
@@ -203,12 +333,20 @@ class MYADDON_PT_VivifyPanel(bpy.types.Panel):
         layout.operator("wm.vivify_add_path_data", text="Add Path Data")
         layout.operator("wm.vivify_export_paths", text="Export All Paths")
         layout.operator("wm.vivify_export_paths_selected", text="Export Selected Paths")
+        layout.prop(context.scene, "vivify_export_path", text="File Path")
+        layout.operator("wm.select_export_path", text="Choose File")
 
-        if context.selected_objects:
-            layout.label(text="Selected objects:")
-            for obj in context.selected_objects:
-                layout.label(text=obj.name)
 
+
+class MYADDON_PT_VivifyPathsPanel(bpy.types.Panel):
+    bl_label = "Paths"
+    bl_idname = "MYADDON_PT_VivifyPathsPanel"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_category = "Vivify"
+
+    def draw(self, context):
+        layout = self.layout
         if len(context.selected_objects) > 0:
             sel_index = 0
             for current_selected_object in context.selected_objects:

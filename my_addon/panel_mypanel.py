@@ -17,6 +17,7 @@
 
 import bpy
 
+
 class VivifyProp(bpy.types.PropertyGroup):
     point_definition_name: bpy.props.StringProperty(name="Name", default="Animation")
     export: bpy.props.BoolProperty(name="Export", default=True)
@@ -33,6 +34,10 @@ class VivifyProp(bpy.types.PropertyGroup):
 class VivifyPropArray(bpy.types.PropertyGroup):
     my_data_array: bpy.props.CollectionProperty(type=VivifyProp)
 
+def export_object_path(obj, path: VivifyProp, operator=None):
+    if operator:
+        operator.report({'INFO'}, f"Exporting path for object {obj.name} with data {path.point_definition_name}")
+
 bpy.utils.register_class(VivifyProp)
 bpy.utils.register_class(VivifyPropArray)
 bpy.types.Object.my_data = bpy.props.PointerProperty(type=VivifyPropArray)
@@ -47,7 +52,7 @@ class WM_OT_ExportPaths(bpy.types.Operator):
             self.report({'INFO'}, f"Object {obj.name} has {len(obj.my_data.my_data_array)} data items")
             if len(obj.my_data.my_data_array) > 0:
                 for i, data in enumerate(obj.my_data.my_data_array):
-                    self.report({'INFO'}, f"Data {i}: {data.point_definition_name}")
+                    export_object_path(obj, data, self)
 
         return {'FINISHED'}
 
@@ -61,7 +66,7 @@ class WM_OT_ExportSelectedPaths(bpy.types.Operator):
             self.report({'INFO'}, f"Object {obj.name} has {len(obj.my_data.my_data_array)} data items")
             if len(obj.my_data.my_data_array) > 0:
                 for i, data in enumerate(obj.my_data.my_data_array):
-                    self.report({'INFO'}, f"Data {i}: {data.point_definition_name}")
+                    export_object_path(obj, data, self)
 
         return {'FINISHED'}
 

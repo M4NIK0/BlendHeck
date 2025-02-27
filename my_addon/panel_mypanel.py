@@ -17,6 +17,22 @@
 
 import bpy
 
+class Simple3DPoint:
+    x: float = 0
+    y: float = 0
+    z: float = 0
+    precision: int = 4
+    easing: str = None
+
+    def __init__(self, x: float = 0, y: float = 0, z: float = 0, precision: int = 4, easing: str = None):
+        self.x = x
+        self.y = y
+        self.z = z
+        self.precision = precision
+        self.easing = easing
+
+    def __str__(self):
+        return f"[{self.x:.{self.precision}f} {self.y:.{self.precision}f} {self.z:.{self.precision}f}" + (f",\"{self.easing}\"" if self.easing else "") + "]"
 
 class VivifyProp(bpy.types.PropertyGroup):
     point_definition_name: bpy.props.StringProperty(name="Name", default="Animation")
@@ -34,9 +50,33 @@ class VivifyProp(bpy.types.PropertyGroup):
 class VivifyPropArray(bpy.types.PropertyGroup):
     my_data_array: bpy.props.CollectionProperty(type=VivifyProp)
 
-def export_object_path(obj, path: VivifyProp, operator=None):
+def export_object_path_curve_pos(obj, path: VivifyProp, operator=None):
     if operator:
         operator.report({'INFO'}, f"Exporting path for object {obj.name} with data {path.point_definition_name}")
+
+    points = []
+    min = path.start_frame
+    max = path.end_frame
+
+    if min > max:
+        if operator:
+            operator.report({'ERROR'}, "Start frame must be less than end frame")
+        return None
+
+    if int((max - min) / path.steps) == 0:
+        if operator:
+            operator.report({'ERROR'}, "Steps must be less than the range of frames")
+        return None
+
+    for i in range(min, max + int((max - min) / path.steps), int((max - min) / path.steps)):
+        bpy.context.scene.frame_set(i)
+        ol = obj.matrix_world.to_translation()
+        points.append(Simple3DPoint(x=ol.x, y=ol.y, z=ol.z))
+
+    if operator:
+        operator.report({'INFO'}, f"Exported {len(points)} points for object {obj.name} with data {path.point_definition_name}")
+
+    return points
 
 bpy.utils.register_class(VivifyProp)
 bpy.utils.register_class(VivifyPropArray)
@@ -48,11 +88,19 @@ class WM_OT_ExportPaths(bpy.types.Operator):
     bl_category = "Vivify"
 
     def execute(self, context):
+        exported = []
         for obj in bpy.data.objects:
             self.report({'INFO'}, f"Object {obj.name} has {len(obj.my_data.my_data_array)} data items")
             if len(obj.my_data.my_data_array) > 0:
                 for i, data in enumerate(obj.my_data.my_data_array):
-                    export_object_path(obj, data, self)
+                    res = export_object_path_curve_pos(obj, data, self)
+                    if res:
+                        exported.append(res)
+                    else:
+                        self.report({'ERROR'}, f"Could not export path for object {obj.name} with data {data.point_definition_name}")
+
+        self.report({'INFO'}, f"Exported {len(exported)} paths")
+        self.report({'INFO'}, f"Exported {exported[0][0]} paths")
 
         return {'FINISHED'}
 
@@ -66,7 +114,7 @@ class WM_OT_ExportSelectedPaths(bpy.types.Operator):
             self.report({'INFO'}, f"Object {obj.name} has {len(obj.my_data.my_data_array)} data items")
             if len(obj.my_data.my_data_array) > 0:
                 for i, data in enumerate(obj.my_data.my_data_array):
-                    export_object_path(obj, data, self)
+                    export_object_path_curve_pos(obj, data, self)
 
         return {'FINISHED'}
 

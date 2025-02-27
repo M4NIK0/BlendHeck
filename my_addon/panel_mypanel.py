@@ -78,18 +78,23 @@ class WM_OT_RemovePathData(bpy.types.Operator):
     bl_idname = "wm.vivify_remove_path_data"
     bl_label = "Remove Path Data"
 
-    index: bpy.props.IntProperty()
+    index: bpy.props.IntProperty()  # Only keep the index property
+    selection_index: bpy.props.IntProperty()  # Add a selection index property
 
     def execute(self, context):
-        obj = context.object
+        obj = context.selected_objects[self.selection_index]  # Get the object from the context
         if obj and hasattr(obj, "my_data"):
             if 0 <= self.index < len(obj.my_data.my_data_array):
                 obj.my_data.my_data_array.remove(self.index)  # Remove the item at the specified index
                 self.report({'INFO'}, f"Removed data at index {self.index}")
             else:
-                self.report({'ERROR'}, "Invalid index")
+                self.report({'ERROR'}, f"Invalid index {self.index}")
                 return {'CANCELLED'}
+        else:
+            self.report({'ERROR'}, "No valid object selected or object doesn't have my_data attribute")
+            return {'CANCELLED'}
         return {'FINISHED'}
+
 
 class VIEW3D_MT_vivify_menu(bpy.types.Menu):
     bl_label = "Vivify Menu"
@@ -114,16 +119,16 @@ class MYADDON_PT_VivifyPanel(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
 
-        layout.label(text="Hey :D")
         layout.operator("wm.vivify_add_path_data", text="Add Path Data")
         layout.operator("wm.vivify_export_paths", text="Export Paths")
 
         if context.selected_objects:
             layout.label(text="Selected objects:")
             for obj in context.selected_objects:
-                layout.label(text=obj.name)
+                layout.label(text=obj.name + " (Invalid type)" if obj.type != 'MESH' else obj.name)
 
         if len(context.selected_objects) > 0:
+            sel_index = 0
             for current_selected_object in context.selected_objects:
                 for i, data in enumerate(current_selected_object.my_data.my_data_array):
                     box = layout.box()
@@ -151,5 +156,7 @@ class MYADDON_PT_VivifyPanel(bpy.types.Panel):
                     # Add a "Remove" button next to each item
                     remove_button = box.operator("wm.vivify_remove_path_data", text="Remove Path Data")
                     remove_button.index = i  # Pass the index of the current data
+                    remove_button.selection_index = sel_index  # Pass the index of the current object
+                sel_index += 1
         else:
             layout.label(text="No object selected")

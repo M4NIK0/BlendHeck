@@ -32,6 +32,8 @@ __all__ = (
     "unregister",
 )
 
+from my_addon.panel_mypanel import VIEW3D_MT_vivify_menu, draw_vivify_menu
+
 blender_version = typing.cast(typing.Tuple[int, int, int], bpy.app.version)
 
 modules = None
@@ -50,6 +52,7 @@ def init():
 
 
 def register():
+    bpy.types.TOPBAR_MT_editor_menus.append(draw_vivify_menu)
     if ordered_classes is not None:
         for cls in ordered_classes:
             bpy.utils.register_class(cls)
@@ -63,6 +66,7 @@ def register():
 
 
 def unregister():
+    bpy.types.TOPBAR_MT_editor_menus.remove(draw_vivify_menu)
     if ordered_classes is not None:
         for cls in reversed(ordered_classes):
             bpy.utils.unregister_class(cls)

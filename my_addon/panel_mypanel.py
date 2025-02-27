@@ -40,6 +40,7 @@ bpy.types.Object.my_data = bpy.props.PointerProperty(type=VivifyPropArray)
 class WM_OT_ExportPaths(bpy.types.Operator):
     bl_idname = "wm.vivify_export_paths"
     bl_label = "Export Paths"
+    bl_category = "Vivify"
 
     def execute(self, context):
         self.report({'INFO'}, "Hello World")
@@ -90,6 +91,19 @@ class WM_OT_RemovePathData(bpy.types.Operator):
                 return {'CANCELLED'}
         return {'FINISHED'}
 
+class VIEW3D_MT_vivify_menu(bpy.types.Menu):
+    bl_label = "Vivify Menu"
+    bl_idname = "VIEW3D_MT_vivify_menu"
+
+    def draw(self, context):
+        layout = self.layout
+        layout.operator("wm.vivify_export_paths", text="Export Paths")
+
+# Add the Vivify menu to the 3D View header (next to Object, View, etc.)
+def draw_vivify_menu(self, context):
+    layout = self.layout
+    layout.menu("VIEW3D_MT_vivify_menu")
+
 class MYADDON_PT_VivifyPanel(bpy.types.Panel):
     bl_label = "Vivify"
     bl_idname = "MYADDON_PT_VivifyPanel"
@@ -104,30 +118,38 @@ class MYADDON_PT_VivifyPanel(bpy.types.Panel):
         layout.operator("wm.vivify_add_path_data", text="Add Path Data")
         layout.operator("wm.vivify_export_paths", text="Export Paths")
 
-        if context.object:
-            for i, data in enumerate(context.object.my_data.my_data_array):
-                box = layout.box()
-                box.label(text="Object path")
+        if context.selected_objects:
+            layout.label(text="Selected objects:")
+            for obj in context.selected_objects:
+                layout.label(text=obj.name)
 
-                # Use a Boolean property to control the visibility of the box contents (collapsible)
-                is_collapsed = context.object.my_data.my_data_array[i].collapsed
-                row = box.row()
-                row.prop(context.object.my_data.my_data_array[i], "point_definition_name")
+        if len(context.selected_objects) > 0:
+            for current_selected_object in context.selected_objects:
+                for i, data in enumerate(current_selected_object.my_data.my_data_array):
+                    box = layout.box()
+                    box.label(text="Object path " + ("(" + current_selected_object.name + ")" if len(context.selected_objects) > 1 else ""))
 
-                # Toggle collapse button
-                row = box.row()
-                row.prop(context.object.my_data.my_data_array[i], "collapsed", text="Collapse", icon="TRIA_DOWN" if not is_collapsed else "TRIA_RIGHT")
+                    # Use a Boolean property to control the visibility of the box contents (collapsible)
+                    is_collapsed = current_selected_object.my_data.my_data_array[i].collapsed
+                    row = box.row()
+                    row.prop(current_selected_object.my_data.my_data_array[i], "point_definition_name")
 
-                # Show content conditionally based on the collapse state
-                if not is_collapsed:
-                    box.prop(context.object.my_data.my_data_array[i], "export")
-                    box.prop(context.object.my_data.my_data_array[i], "export_position")
-                    box.prop(context.object.my_data.my_data_array[i], "export_rotation")
-                    box.prop(context.object.my_data.my_data_array[i], "export_scale")
-                    box.prop(context.object.my_data.my_data_array[i], "steps")
-                    box.prop(context.object.my_data.my_data_array[i], "start_frame")
-                    box.prop(context.object.my_data.my_data_array[i], "end_frame")
+                    # Toggle collapse button
+                    row = box.row()
+                    row.prop(current_selected_object.my_data.my_data_array[i], "collapsed", text="Collapse", icon="TRIA_DOWN" if not is_collapsed else "TRIA_RIGHT")
 
-                # Add a "Remove" button next to each item
-                remove_button = box.operator("wm.vivify_remove_path_data", text="Remove Path Data")
-                remove_button.index = i  # Pass the index of the current data
+                    # Show content conditionally based on the collapse state
+                    if not is_collapsed:
+                        box.prop(current_selected_object.my_data.my_data_array[i], "export")
+                        box.prop(current_selected_object.my_data.my_data_array[i], "export_position")
+                        box.prop(current_selected_object.my_data.my_data_array[i], "export_rotation")
+                        box.prop(current_selected_object.my_data.my_data_array[i], "export_scale")
+                        box.prop(current_selected_object.my_data.my_data_array[i], "steps")
+                        box.prop(current_selected_object.my_data.my_data_array[i], "start_frame")
+                        box.prop(current_selected_object.my_data.my_data_array[i], "end_frame")
+
+                    # Add a "Remove" button next to each item
+                    remove_button = box.operator("wm.vivify_remove_path_data", text="Remove Path Data")
+                    remove_button.index = i  # Pass the index of the current data
+        else:
+            layout.label(text="No object selected")

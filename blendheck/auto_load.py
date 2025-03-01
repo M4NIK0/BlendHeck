@@ -56,7 +56,6 @@ def register():
         name="Export File Path",
         description="Path to export the data",
         subtype='FILE_PATH',
-        update=map.update_export_path,
     )
     bpy.app.handlers.load_post.append(handlers.load_map_handler)
     bpy.types.Scene.vivify_map_data = {}
@@ -73,6 +72,7 @@ def register():
 
 def unregister():
     bpy.types.TOPBAR_MT_editor_menus.remove(panel_mypanel.draw_vivify_menu)
+    bpy.app.handlers.load_post.remove(handlers.load_map_handler)
     del bpy.types.Scene.vivify_export_path
     del bpy.types.Scene.vivify_map_data
     if ordered_classes is not None:

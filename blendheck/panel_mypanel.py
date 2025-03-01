@@ -16,6 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import bpy
+import json
 from . import props
 from . import paths
 
@@ -216,6 +217,11 @@ class MYADDON_PT_VivifyPanel(bpy.types.Panel):
         layout.operator("wm.vivify_export_paths_selected", text="Export Selected Paths")
         layout.prop(context.scene, "vivify_export_path", text="Map File")
         layout.operator("wm.select_export_path", text="Choose File")
+        layout.operator("wm.vivify_load_map_file", text="Load Map File")
+
+        aaaaa = json.dumps(context.scene.vivify_map_data, indent=4)
+        for line in aaaaa.split("\n"):
+            layout.label(text=line)
 
 class MYADDON_PT_VivifyPathsPanel(bpy.types.Panel):
     bl_label = "Paths"

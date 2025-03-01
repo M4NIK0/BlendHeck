@@ -8,17 +8,23 @@ def get_map_file(path: str) -> dict:
     except FileNotFoundError:
         return {}
 
-def update_export_path(self: bpy.types.bpy_struct, context: bpy.types.Context) -> None:
-    path = context.scene.vivify_export_path
+class WM_OT_LoadMapFile(bpy.types.Operator):
+    bl_idname = "wm.vivify_load_map_file"
+    bl_label = "Load Map File"
+    bl_category = "Vivify"
 
-    map_data = get_map_file(path)
-    if map_data == {}:
-        bpy.context.window_manager.popup_menu(lambda self, context: self.layout.label(text="Invalid map file"), title="Error", icon='ERROR')
-        return
+    def execute(self, context):
+        if not context.scene.vivify_export_path:
+            self.report({'ERROR'}, "No map file path set")
+            return {'CANCELLED'}
 
-    try:
-        context.scene.vivify_map_data.update(map_data)
-    except Exception as e:
-        bpy.context.window_manager.popup_menu(lambda self, context: self.layout.label(text=e), title="Error", icon='ERROR')
+        loaded = get_map_file(context.scene.vivify_export_path)
 
-    bpy.context.window_manager.popup_menu(lambda self, context: self.layout.label(text="Map file loaded" + f"{context.scene.vivify_map_data}"), title="Info", icon='INFO')
+        if loaded == {}:
+            self.report({'ERROR'}, "Failed to load map file")
+            return {'CANCELLED'}
+
+        context.scene.vivify_map_data.update(loaded)
+        self.report({'INFO'}, "Map file loaded")
+
+        return {'FINISHED'}

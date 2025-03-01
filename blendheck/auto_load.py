@@ -23,6 +23,7 @@ import inspect
 import pkgutil
 import typing
 from pathlib import Path
+from . import panel_mypanel
 
 import bpy
 
@@ -32,13 +33,10 @@ __all__ = (
     "unregister",
 )
 
-from my_addon.panel_mypanel import VIEW3D_MT_vivify_menu, draw_vivify_menu
-
 blender_version = typing.cast(typing.Tuple[int, int, int], bpy.app.version)
 
 modules = None
 ordered_classes = None
-
 
 def init():
     global modules
@@ -52,7 +50,7 @@ def init():
 
 
 def register():
-    bpy.types.TOPBAR_MT_editor_menus.append(draw_vivify_menu)
+    bpy.types.TOPBAR_MT_editor_menus.append(panel_mypanel.draw_vivify_menu)
     bpy.types.Scene.vivify_export_path = bpy.props.StringProperty(
         name="Export File Path",
         description="Path to export the data",
@@ -71,7 +69,7 @@ def register():
 
 
 def unregister():
-    bpy.types.TOPBAR_MT_editor_menus.remove(draw_vivify_menu)
+    bpy.types.TOPBAR_MT_editor_menus.remove(panel_mypanel.draw_vivify_menu)
     del bpy.types.Scene.vivify_export_path
     if ordered_classes is not None:
         for cls in reversed(ordered_classes):
@@ -208,7 +206,6 @@ def get_register_base_types():
 
 # Find order to register to solve dependencies
 #################################################
-
 
 def toposort(deps_dict):
     sorted_list = []

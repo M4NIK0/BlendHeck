@@ -16,188 +16,12 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import bpy
+from . import props
+from . import paths
 
-class Point:
-    x: float = 0
-    y: float = 0
-    z: float = 0
-    precision: int = 4
-    easing: str = None
-    time: int = 0
-
-    def __init__(self, x: float = 0, y: float = 0, z: float = 0, precision: int = 4, easing: str = None, time: float = 0):
-        self.x = x
-        self.y = y
-        self.z = z
-        self.precision = precision
-        self.easing = easing
-        self.time = time
-
-    def __str__(self):
-        return f"[{self.x:.{self.precision}f},{self.y:.{self.precision}f},{self.z:.{self.precision}f},{self.time}" + (f",\"{self.easing}\"" if self.easing else "") + "]"
-
-class PositionPath:
-    points: list[Point] = []
-    name: str = "Animation"
-
-    def __init__(self, points: list[Point], name: str):
-        self.points = points
-        self.name = name
-
-    def __str__(self):
-        return "[" + ",".join([str(p) for p in self.points]) + "]"
-
-class RotationPath:
-    points: list[Point] = []
-    name: str = "Animation"
-
-    def __init__(self, points: list[Point], name: str):
-        self.points = points
-        self.name = name
-
-    def __str__(self):
-        return "[" + ",".join([str(p) for p in self.points]) + "]"
-
-class ScalePath:
-    points: list[Point] = []
-    name: str = "Animation"
-
-    def __init__(self, points: list[Point], name: str):
-        self.points = points
-        self.name = name
-
-    def __str__(self):
-        return "[" + ",".join([str(p) for p in self.points]) + "]"
-
-class VivifyProp(bpy.types.PropertyGroup):
-    point_definition_name: bpy.props.StringProperty(name="Name", default="Animation")
-    export: bpy.props.BoolProperty(name="Export", default=True)
-    export_position: bpy.props.BoolProperty(name="Export Position", default=True)
-    export_rotation: bpy.props.BoolProperty(name="Export Rotation", default=True)
-    export_scale: bpy.props.BoolProperty(name="Export Scale", default=True)
-    steps: bpy.props.IntProperty(name="Steps", default=10)
-    start_frame: bpy.props.IntProperty(name="Start Frame", default=1)
-    end_frame: bpy.props.IntProperty(name="End Frame", default=100)
-
-    # Add a collapsed property to control visibility
-    collapsed: bpy.props.BoolProperty(name="Collapsed", default=False)
-
-class VivifyPropArray(bpy.types.PropertyGroup):
-    my_data_array: bpy.props.CollectionProperty(type=VivifyProp)
-
-def export_object_path_curve_pos(obj, path: VivifyProp, operator=None):
-    localtransforms = False # TODO: add some stuff to the panel parameters
-    points = []
-    min = path.start_frame
-    max = path.end_frame
-
-    if min > max:
-        if operator:
-            operator.report({'ERROR'}, "Start frame must be less than end frame")
-        return None
-
-    if int((max - min) / path.steps) == 0:
-        if operator:
-            operator.report({'ERROR'}, "Steps must be less than the range of frames")
-        return None
-
-    for i in range(min, max + int((max - min) / path.steps), int((max - min) / path.steps)):
-        current_animation_frame = round((i - min) / (max - min), 6)
-        bpy.context.scene.frame_set(i)
-        ol = None
-        if localtransforms:
-            ol = obj.location
-        else:
-            ol = obj.matrix_world.to_translation()
-        points.append(Point(x=ol.x, y=ol.y, z=ol.z, time=current_animation_frame))
-
-    if operator:
-        operator.report({'INFO'}, f"Exported {len(points)} points for object {obj.name} with position curve {path.point_definition_name}")
-
-    return PositionPath(points, path.point_definition_name + "_pos")
-
-def export_object_path_curve_rot(obj, path: VivifyProp, operator=None):
-    localtransforms = False # TODO: add some stuff to the panel parameters
-    points = []
-    min = path.start_frame
-    max = path.end_frame
-
-    if min > max:
-        if operator:
-            operator.report({'ERROR'}, "Start frame must be less than end frame")
-        return None
-
-    if int((max - min) / path.steps) == 0:
-        if operator:
-            operator.report({'ERROR'}, "Steps must be less than the range of frames")
-        return None
-
-    for i in range(min, max + int((max - min) / path.steps), int((max - min) / path.steps)):
-        current_animation_frame = round((i - min) / (max - min), 6)
-        bpy.context.scene.frame_set(i)
-        ol = None
-        if localtransforms:
-            ol = obj.rotation_euler
-        else:
-            ol = obj.matrix_world.to_euler()
-        points.append(Point(x=ol.x, y=ol.y, z=ol.z, time=current_animation_frame))
-
-    if operator:
-        operator.report({'INFO'}, f"Exported {len(points)} points for object {obj.name} with rotation curve {path.point_definition_name}")
-
-    return RotationPath(points, path.point_definition_name + "_rot")
-
-def export_object_path_curve_scale(obj, path: VivifyProp, operator=None):
-    localtransforms = False # TODO: add some stuff to the panel parameters
-    points = []
-    min = path.start_frame
-    max = path.end_frame
-
-    if min > max:
-        if operator:
-            operator.report({'ERROR'}, "Start frame must be less than end frame")
-        return None
-
-    if int((max - min) / path.steps) == 0:
-        if operator:
-            operator.report({'ERROR'}, "Steps must be less than the range of frames")
-        return None
-
-    for i in range(min, max + int((max - min) / path.steps), int((max - min) / path.steps)):
-        current_animation_frame = round((i - min) / (max - min), 6)
-        bpy.context.scene.frame_set(i)
-        ol = None
-        if localtransforms:
-            ol = obj.scale
-        else:
-            ol = obj.matrix_world.to_scale()
-        points.append(Point(x=ol.x, y=ol.y, z=ol.z, time=current_animation_frame))
-
-    if operator:
-        operator.report({'INFO'}, f"Exported {len(points)} points for object {obj.name} with scale curve {path.point_definition_name}")
-
-    return ScalePath(points, path.point_definition_name + "_scale")
-
-bpy.utils.register_class(VivifyProp)
-bpy.utils.register_class(VivifyPropArray)
-bpy.types.Object.my_data = bpy.props.PointerProperty(type=VivifyPropArray)
-
-# class WM_OT_SelectExportPath(bpy.types.Operator):
-#     bl_idname = "wm.select_export_path"
-#     bl_label = "Select Export Path"
-#     bl_description = "Choose a file path for exporting data"
-#
-#     filepath: bpy.props.StringProperty(subtype="FILE_PATH")
-#
-#     def execute(self, context):
-#         # Store the selected file path in the global property
-#         context.scene.vivify_export_path = self.filepath
-#         self.report({'INFO'}, f"Export path set to: {self.filepath}")
-#         return {'FINISHED'}
-#
-#     def invoke(self, context, event):
-#         context.window_manager.fileselect_add(self)
-#         return {'RUNNING_MODAL'}
+bpy.utils.register_class(props.VivifyProp)
+bpy.utils.register_class(props.VivifyPropArray)
+bpy.types.Object.my_data = bpy.props.PointerProperty(type=props.VivifyPropArray)
 
 class WM_OT_ExportPaths(bpy.types.Operator):
     bl_idname = "wm.vivify_export_paths"
@@ -220,19 +44,19 @@ class WM_OT_ExportPaths(bpy.types.Operator):
                     if data.export:
                         try:
                             if data.export_position:
-                                pospath = export_object_path_curve_pos(obj, data, self)
+                                pospath = paths.export_object_path_curve_pos(obj, data, self)
                                 exported_positions.append(pospath)
                         except Exception as e:
                             self.report({'ERROR'}, f"Could not export position data for object {obj.name}: {e}")
                         try:
                             if data.export_rotation:
-                                rotpath = export_object_path_curve_rot(obj, data, self)
+                                rotpath = paths.export_object_path_curve_rot(obj, data, self)
                                 exported_rotations.append(rotpath)
                         except Exception as e:
                             self.report({'ERROR'}, f"Could not export rotation data for object {obj.name}: {e}")
                         try:
                             if data.export_scale:
-                                scalepath = export_object_path_curve_scale(obj, data, self)
+                                scalepath = paths.export_object_path_curve_scale(obj, data, self)
                                 exported_scales.append(scalepath)
                         except Exception as e:
                             self.report({'ERROR'}, f"Could not export scale data for object {obj.name}: {e}")
@@ -279,19 +103,19 @@ class WM_OT_ExportSelectedPaths(bpy.types.Operator):
                     if data.export:
                         try:
                             if data.export_position:
-                                pospath = export_object_path_curve_pos(obj, data, self)
+                                pospath = paths.export_object_path_curve_pos(obj, data, self)
                                 exported_positions.append(pospath)
                         except Exception as e:
                             self.report({'ERROR'}, f"Could not export position data for object {obj.name}: {e}")
                         try:
                             if data.export_rotation:
-                                rotpath = export_object_path_curve_rot(obj, data, self)
+                                rotpath = paths.export_object_path_curve_rot(obj, data, self)
                                 exported_rotations.append(rotpath)
                         except Exception as e:
                             self.report({'ERROR'}, f"Could not export rotation data for object {obj.name}: {e}")
                         try:
                             if data.export_scale:
-                                scalepath = export_object_path_curve_scale(obj, data, self)
+                                scalepath = paths.export_object_path_curve_scale(obj, data, self)
                                 exported_scales.append(scalepath)
                         except Exception as e:
                             self.report({'ERROR'}, f"Could not export scale data for object {obj.name}: {e}")
@@ -388,8 +212,6 @@ class MYADDON_PT_VivifyPanel(bpy.types.Panel):
         layout.operator("wm.vivify_export_paths_selected", text="Export Selected Paths")
         layout.prop(context.scene, "vivify_export_path", text="File Path")
         layout.operator("wm.select_export_path", text="Choose File")
-
-
 
 class MYADDON_PT_VivifyPathsPanel(bpy.types.Panel):
     bl_label = "Paths"

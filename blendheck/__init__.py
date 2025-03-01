@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 bl_info = {
-    "name": "BlendHeck",
+    "name": "blendheck",
     "author": "Nyaniko~",
     "description": "A Vivify preview/editor for Blender",
     "blender": (4, 3, 0),
@@ -28,16 +28,12 @@ bl_info = {
 
 # Wrap in try-except here so that we can use hatch's dynamic version detection
 # without this failing. See the `[tool.hatch.version]` section in `pyproject.toml`.
-try:
-    from . import auto_load
+from . import auto_load
 
-    auto_load.init()
+auto_load.init()
 
-    def register():
-        auto_load.register()
+def register():
+    auto_load.register()
 
-    def unregister():
-        auto_load.unregister()
-
-except ImportError:
-    pass
+def unregister():
+    auto_load.unregister()

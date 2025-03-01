@@ -33,6 +33,10 @@ class WM_OT_ExportPaths(bpy.types.Operator):
             self.report({'ERROR'}, "No export path set")
             return {'CANCELLED'}
 
+        if context.scene.vivify_map_data == {}:
+            self.report({'ERROR'}, "No map data found")
+            return {'CANCELLED'}
+
         exported_positions = []
         exported_rotations = []
         exported_scales = []
@@ -210,7 +214,7 @@ class MYADDON_PT_VivifyPanel(bpy.types.Panel):
         layout.operator("wm.vivify_add_path_data", text="Add Path Data")
         layout.operator("wm.vivify_export_paths", text="Export All Paths")
         layout.operator("wm.vivify_export_paths_selected", text="Export Selected Paths")
-        layout.prop(context.scene, "vivify_export_path", text="File Path")
+        layout.prop(context.scene, "vivify_export_path", text="Map File")
         layout.operator("wm.select_export_path", text="Choose File")
 
 class MYADDON_PT_VivifyPathsPanel(bpy.types.Panel):

@@ -24,6 +24,8 @@ import pkgutil
 import typing
 from pathlib import Path
 from . import panel_mypanel
+from . import map
+from . import handlers
 
 import bpy
 
@@ -48,14 +50,16 @@ def init():
     modules = get_all_submodules(Path(__file__).parent)
     ordered_classes = get_ordered_classes_to_register(modules)
 
-
 def register():
     bpy.types.TOPBAR_MT_editor_menus.append(panel_mypanel.draw_vivify_menu)
     bpy.types.Scene.vivify_export_path = bpy.props.StringProperty(
         name="Export File Path",
         description="Path to export the data",
-        subtype='FILE_PATH'
+        subtype='FILE_PATH',
+        update=map.update_export_path,
     )
+    bpy.app.handlers.load_post.append(handlers.load_map_handler)
+    bpy.types.Scene.vivify_map_data = {}
     if ordered_classes is not None:
         for cls in ordered_classes:
             bpy.utils.register_class(cls)
@@ -67,10 +71,10 @@ def register():
             if hasattr(module, "register"):
                 module.register()
 
-
 def unregister():
     bpy.types.TOPBAR_MT_editor_menus.remove(panel_mypanel.draw_vivify_menu)
     del bpy.types.Scene.vivify_export_path
+    del bpy.types.Scene.vivify_map_data
     if ordered_classes is not None:
         for cls in reversed(ordered_classes):
             bpy.utils.unregister_class(cls)

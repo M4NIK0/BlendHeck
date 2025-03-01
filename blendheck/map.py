@@ -4,7 +4,14 @@ import json
 def get_map_file(path: str) -> dict:
     try:
         with open(path, "r") as file:
-            return json.load(file)
+            imported = json.load(file)
+            if "version" not in imported or imported["version"][0] != '3':
+                return {}
+            if "basicBeatmapEvents" not in imported:
+                return {}
+            if "colorNotes" not in imported:
+                return {}
+            return imported
     except FileNotFoundError:
         return {}
 

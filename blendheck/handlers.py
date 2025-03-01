@@ -4,4 +4,4 @@ from . import map
 
 @hdlrs.persistent
 def load_map_handler(scene) -> None:
-    scene.vivify_map_data.update({})
+    scene.vivify_map_data.clear()

@@ -219,9 +219,7 @@ class MYADDON_PT_VivifyPanel(bpy.types.Panel):
         layout.operator("wm.select_export_path", text="Choose File")
         layout.operator("wm.vivify_load_map_file", text="Load Map File")
 
-        aaaaa = json.dumps(context.scene.vivify_map_data, indent=4)
-        for line in aaaaa.split("\n"):
-            layout.label(text=line)
+        layout.label(text=f"{context.scene.vivify_map_data}")
 
 class MYADDON_PT_VivifyPathsPanel(bpy.types.Panel):
     bl_label = "Paths"

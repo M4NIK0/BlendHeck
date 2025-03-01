@@ -24,6 +24,7 @@ class WM_OT_LoadMapFile(bpy.types.Operator):
             self.report({'ERROR'}, "Failed to load map file")
             return {'CANCELLED'}
 
+        context.scene.vivify_map_data.clear()
         context.scene.vivify_map_data.update(loaded)
         self.report({'INFO'}, "Map file loaded")
 

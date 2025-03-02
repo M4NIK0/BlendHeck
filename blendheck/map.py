@@ -15,6 +15,20 @@ def get_map_file(path: str) -> dict:
     except FileNotFoundError:
         return {}
 
+def setup_point_definitions(level: dict):
+    if "customData" not in level:
+        level["customData"] = {"pointDefinitions": {}}
+        return level
+    if "pointDefinitions" not in level["customData"]:
+        level["customData"]["pointDefinitions"] = {}
+        return level
+    return level
+
+def get_point_definitions(level: dict):
+    if "customData" not in level or "pointDefinitions" not in level["customData"]:
+        return []
+    return [pd for pd in level["customData"]["pointDefinitions"].keys()]
+
 class WM_OT_LoadMapFile(bpy.types.Operator):
     bl_idname = "wm.vivify_load_map_file"
     bl_label = "Load Map File"

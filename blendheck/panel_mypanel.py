@@ -19,6 +19,7 @@ import bpy
 import json
 from . import props
 from . import paths
+from . import map
 
 bpy.utils.register_class(props.VivifyProp)
 bpy.utils.register_class(props.VivifyPropArray)
@@ -219,7 +220,7 @@ class MYADDON_PT_VivifyPanel(bpy.types.Panel):
         layout.operator("wm.select_export_path", text="Choose File")
         layout.operator("wm.vivify_load_map_file", text="Load Map File")
 
-        layout.label(text=f"{context.scene.vivify_map_data}")
+        layout.label(text=f"{map.get_point_definitions(context.scene.vivify_map_data)}")
 
 class MYADDON_PT_VivifyPathsPanel(bpy.types.Panel):
     bl_label = "Paths"

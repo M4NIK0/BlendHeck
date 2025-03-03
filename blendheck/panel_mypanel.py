@@ -185,12 +185,15 @@ class WM_OT_RemovePathData(bpy.types.Operator):
 
 
 class VIEW3D_MT_vivify_menu(bpy.types.Menu):
-    bl_label = "Vivify Menu"
+    bl_label = "Vivify"
     bl_idname = "VIEW3D_MT_vivify_menu"
 
     def draw(self, context):
         layout = self.layout
-        layout.operator("wm.vivify_export_paths", text="Export Paths")
+        layout.operator("wm.vivify_save_map_data", text="Save Map Data")
+        layout.operator("wm.vivify_load_map_file", text="Load Map File")
+        layout.operator("wm.vivify_export_paths", text="Export All Paths")
+        layout.operator("wm.vivify_export_paths_selected", text="Export Selected Paths")
 
 # Add the Vivify menu to the 3D View header (next to Object, View, etc.)
 def draw_vivify_menu(self, context):

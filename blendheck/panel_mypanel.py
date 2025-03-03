@@ -52,44 +52,36 @@ class WM_OT_ExportPaths(bpy.types.Operator):
                             if data.export_position:
                                 pospath = paths.export_object_path_curve_pos(obj, data, self)
                                 exported_positions.append(pospath)
-                                self.report({'INFO'}, "Exported position data for object " + str(pospath.get_json_dict()))
                         except Exception as e:
                             self.report({'ERROR'}, f"Could not export position data for object {obj.name}: {e}")
                         try:
                             if data.export_rotation:
                                 rotpath = paths.export_object_path_curve_rot(obj, data, self)
                                 exported_rotations.append(rotpath)
-                                self.report({'INFO'}, "Exported rotation data for object " + str(rotpath.get_json_dict()))
                         except Exception as e:
                             self.report({'ERROR'}, f"Could not export rotation data for object {obj.name}: {e}")
                         try:
                             if data.export_scale:
                                 scalepath = paths.export_object_path_curve_scale(obj, data, self)
                                 exported_scales.append(scalepath)
-                                self.report({'INFO'}, "Exported scale data for object " + str(scalepath.get_json_dict()))
                         except Exception as e:
                             self.report({'ERROR'}, f"Could not export scale data for object {obj.name}: {e}")
                     else:
                         self.report({'INFO'}, f"Skipping export of data {data.point_definition_name} for object {obj.name}")
 
-        return {'FINISHED'} # TODO: Remove and implement this heckin' thing
-
         file_path = context.scene.vivify_export_path
+
+        dict_to_export = map.setup_point_definitions(context.scene.vivify_map_data)
+
+        for pos in exported_positions:
+            dict_to_export["customData"]["pointDefinitions"].update(pos.get_json_dict())
+        for rot in exported_rotations:
+            dict_to_export["customData"]["pointDefinitions"].update(rot.get_json_dict())
+        for scale in exported_scales:
+            dict_to_export["customData"]["pointDefinitions"].update(scale.get_json_dict())
+
         with (open(file_path, "w") as f):
-            final_string = ""
-            ind = 0
-            for pos in exported_positions:
-                final_string += '"' + pos.name + '":' + str(pos) + ("," if ind < len(exported_positions) - 1 or len(exported_rotations) > 0 or len(exported_scales) > 0 else "")
-                ind += 1
-            ind = 0
-            for rot in exported_rotations:
-                final_string += '"' + rot.name + '":' + str(rot) + ("," if ind < len(exported_rotations) - 1 or len(exported_scales) > 0 else "")
-                ind += 1
-            ind = 0
-            for scale in exported_scales:
-                final_string += '"' + scale.name + '":' + str(scale) + ("," if ind < len(exported_scales) - 1 else "")
-                ind += 1
-            f.write("{" + final_string + "}")
+            f.write(json.dumps(dict_to_export))
 
         return {'FINISHED'}
 
@@ -134,21 +126,18 @@ class WM_OT_ExportSelectedPaths(bpy.types.Operator):
                         self.report({'INFO'}, f"Skipping export of data {data.point_definition_name} for object {obj.name}")
 
         file_path = context.scene.vivify_export_path
+
+        dict_to_export = map.setup_point_definitions(context.scene.vivify_map_data)
+
+        for pos in exported_positions:
+            dict_to_export["customData"]["pointDefinitions"].update(pos.get_json_dict())
+        for rot in exported_rotations:
+            dict_to_export["customData"]["pointDefinitions"].update(rot.get_json_dict())
+        for scale in exported_scales:
+            dict_to_export["customData"]["pointDefinitions"].update(scale.get_json_dict())
+
         with (open(file_path, "w") as f):
-            final_string = ""
-            ind = 0
-            for pos in exported_positions:
-                final_string += '"' + pos.name + '":' + str(pos) + ("," if ind < len(exported_positions) - 1 or len(exported_rotations) > 0 or len(exported_scales) > 0 else "")
-                ind += 1
-            ind = 0
-            for rot in exported_rotations:
-                final_string += '"' + rot.name + '":' + str(rot) + ("," if ind < len(exported_rotations) - 1 or len(exported_scales) > 0 else "")
-                ind += 1
-            ind = 0
-            for scale in exported_scales:
-                final_string += '"' + scale.name + '":' + str(scale) + ("," if ind < len(exported_scales) - 1 else "")
-                ind += 1
-            f.write("{" + final_string + "}")
+            f.write(json.dumps(dict_to_export))
 
         return {'FINISHED'}
 

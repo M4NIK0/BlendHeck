@@ -183,7 +183,6 @@ class WM_OT_RemovePathData(bpy.types.Operator):
             return {'CANCELLED'}
         return {'FINISHED'}
 
-
 class VIEW3D_MT_vivify_menu(bpy.types.Menu):
     bl_label = "Vivify"
     bl_idname = "VIEW3D_MT_vivify_menu"
@@ -257,11 +256,15 @@ class MYADDON_PT_VivifyPathsPanel(bpy.types.Panel):
 
                     # Show content conditionally based on the collapse state
                     if not is_collapsed:
+                        box.prop(current_selected_object.my_data.my_data_array[i], "path_type")
                         box.prop(current_selected_object.my_data.my_data_array[i], "export")
-                        box.prop(current_selected_object.my_data.my_data_array[i], "export_position")
-                        box.prop(current_selected_object.my_data.my_data_array[i], "export_rotation")
-                        box.prop(current_selected_object.my_data.my_data_array[i], "export_scale")
-                        box.prop(current_selected_object.my_data.my_data_array[i], "steps")
+                        if current_selected_object.my_data.my_data_array[i].path_type == 'Curve/Custom':
+                            box.prop(current_selected_object.my_data.my_data_array[i], "export_position")
+                            box.prop(current_selected_object.my_data.my_data_array[i], "export_rotation")
+                            box.prop(current_selected_object.my_data.my_data_array[i], "export_scale")
+                            box.prop(current_selected_object.my_data.my_data_array[i], "steps")
+                        else:
+                            box.prop(current_selected_object.my_data.my_data_array[i], "keyframe_type")
                         box.prop(current_selected_object.my_data.my_data_array[i], "start_frame")
                         box.prop(current_selected_object.my_data.my_data_array[i], "end_frame")
 
@@ -272,3 +275,4 @@ class MYADDON_PT_VivifyPathsPanel(bpy.types.Panel):
                 sel_index += 1
         else:
             layout.label(text="No object selected")
+

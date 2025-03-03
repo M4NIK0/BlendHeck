@@ -7,9 +7,9 @@ class Point:
     z: float = 0
     precision: int = 4
     easing: str = None
-    time: int = 0
+    time: float = None
 
-    def __init__(self, x: float = 0, y: float = 0, z: float = 0, precision: int = 4, easing: str = None, time: float = 0):
+    def __init__(self, x: float = 0, y: float = 0, z: float = 0, precision: int = 4, easing: str = None, time: float = None):
         self.x = x
         self.y = y
         self.z = z
@@ -18,7 +18,10 @@ class Point:
         self.time = time
 
     def __str__(self):
-        return f"[{self.x:.{self.precision}f},{self.y:.{self.precision}f},{self.z:.{self.precision}f},{self.time}" + (f",\"{self.easing}\"" if self.easing else "") + "]"
+        return f"[{self.x:.{self.precision}f},{self.y:.{self.precision}f},{self.z:.{self.precision}f}" + (f",{self.time}" if self.time is not None else "") + (f",\"{self.easing}\"" if self.easing else "") + "]"
+
+    def get_json_list(self):
+        return [self.x, self.y, self.z] + ([self.time] if self.time is not None else []) + ([self.easing] if self.easing else [])
 
 class PositionPath:
     points: list[Point] = []
@@ -31,6 +34,9 @@ class PositionPath:
     def __str__(self):
         return "[" + ",".join([str(p) for p in self.points]) + "]"
 
+    def get_json_dict(self):
+        return {self.name: [p.get_json_list() for p in self.points]}
+
 class RotationPath:
     points: list[Point] = []
     name: str = "Animation"
@@ -42,6 +48,9 @@ class RotationPath:
     def __str__(self):
         return "[" + ",".join([str(p) for p in self.points]) + "]"
 
+    def get_json_dict(self):
+        return {self.name: [p.get_json_list() for p in self.points]}
+
 class ScalePath:
     points: list[Point] = []
     name: str = "Animation"
@@ -52,6 +61,9 @@ class ScalePath:
 
     def __str__(self):
         return "[" + ",".join([str(p) for p in self.points]) + "]"
+
+    def get_json_dict(self):
+        return {self.name: [p.get_json_list() for p in self.points]}
 
 def export_object_path_curve_pos(obj, path: props.VivifyProp, operator=None):
     localtransforms = False # TODO: add some stuff to the panel parameters

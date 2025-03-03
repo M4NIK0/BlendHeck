@@ -52,22 +52,27 @@ class WM_OT_ExportPaths(bpy.types.Operator):
                             if data.export_position:
                                 pospath = paths.export_object_path_curve_pos(obj, data, self)
                                 exported_positions.append(pospath)
+                                self.report({'INFO'}, "Exported position data for object " + str(pospath.get_json_dict()))
                         except Exception as e:
                             self.report({'ERROR'}, f"Could not export position data for object {obj.name}: {e}")
                         try:
                             if data.export_rotation:
                                 rotpath = paths.export_object_path_curve_rot(obj, data, self)
                                 exported_rotations.append(rotpath)
+                                self.report({'INFO'}, "Exported rotation data for object " + str(rotpath.get_json_dict()))
                         except Exception as e:
                             self.report({'ERROR'}, f"Could not export rotation data for object {obj.name}: {e}")
                         try:
                             if data.export_scale:
                                 scalepath = paths.export_object_path_curve_scale(obj, data, self)
                                 exported_scales.append(scalepath)
+                                self.report({'INFO'}, "Exported scale data for object " + str(scalepath.get_json_dict()))
                         except Exception as e:
                             self.report({'ERROR'}, f"Could not export scale data for object {obj.name}: {e}")
                     else:
                         self.report({'INFO'}, f"Skipping export of data {data.point_definition_name} for object {obj.name}")
+
+        return {'FINISHED'} # TODO: Remove and implement this heckin' thing
 
         file_path = context.scene.vivify_export_path
         with (open(file_path, "w") as f):

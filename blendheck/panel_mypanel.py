@@ -4,7 +4,7 @@
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
 # as published by the Free Software Foundation; either version 2
-# of the License, or (at your option) any later version.
+# of the License, or (a                                    t your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -210,6 +210,7 @@ class MYADDON_PT_VivifyPanel(bpy.types.Panel):
         layout.operator("wm.vivify_add_path_data", text="Add Path Data")
         layout.operator("wm.vivify_export_paths", text="Export All Paths")
         layout.operator("wm.vivify_export_paths_selected", text="Export Selected Paths")
+        layout.operator("wm.vivify_save_map_data", text="Save Map Data")
         layout.prop(context.scene, "vivify_export_path", text="Map File")
         layout.operator("wm.select_export_path", text="Choose File")
         layout.operator("wm.vivify_load_map_file", text="Load Map File")

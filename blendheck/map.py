@@ -58,7 +58,7 @@ class WM_OT_RemoveMapPath(bpy.types.Operator):
     path_key: bpy.props.StringProperty()
 
     def execute(self, context):
-        self.report({'INFO'}, f"Not implemented yet")
+        context.scene.vivify_map_data["customData"]["pointDefinitions"].pop(self.path_key)
         return {'FINISHED'}
 
 class WM_OT_PreviewMapPath(bpy.types.Operator):
@@ -69,6 +69,18 @@ class WM_OT_PreviewMapPath(bpy.types.Operator):
 
     def execute(self, context):
         self.report({'INFO'}, f"Not implemented yet")
+        return {'FINISHED'}
+
+class WM_OT_SaveMapData(bpy.types.Operator):
+    bl_idname = "wm.vivify_save_map_data"
+    bl_label = "Save Map Data"
+
+    def execute(self, context):
+        if context.scene.vivify_export_path == "" or context.scene.vivify_export_path is None:
+            self.report({'ERROR'}, "No export path set")
+            return {'CANCELLED'}
+        with open(context.scene.vivify_export_path, "w") as file:
+            file.write(json.dumps(context.scene.vivify_map_data))
         return {'FINISHED'}
 
 class MYADDON_PT_MapDataPanel(bpy.types.Panel):

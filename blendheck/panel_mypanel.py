@@ -84,8 +84,6 @@ class WM_OT_ExportPaths(bpy.types.Operator):
                     else:
                         self.report({'INFO'}, f"Skipped {data.point_definition_name} for {obj.name}")
 
-        file_path = context.scene.vivify_export_path
-
         dict_to_export = map.setup_point_definitions(context.scene.vivify_map_data)
 
         for pos in exported_positions:
@@ -95,8 +93,7 @@ class WM_OT_ExportPaths(bpy.types.Operator):
         for scale in exported_scales:
             dict_to_export["customData"]["pointDefinitions"].update(scale.get_json_dict())
 
-        with (open(file_path, "w") as f):
-            f.write(json.dumps(dict_to_export))
+        self.report({'INFO'}, f"Exported all paths! Don't forget to save the map file.")
 
         return {'FINISHED'}
 
@@ -119,28 +116,41 @@ class WM_OT_ExportSelectedPaths(bpy.types.Operator):
             if len(obj.my_data.my_data_array) > 0:
                 for i, data in enumerate(obj.my_data.my_data_array):
                     if data.export:
-                        try:
-                            if data.export_position:
-                                pospath = paths.export_object_path_curve_pos(obj, data, self)
+                        if data.path_type == 'Curve/Custom':
+                            try:
+                                if data.export_position:
+                                    pospath = paths.export_object_path_curve_pos(obj, data, self)
+                                    exported_positions.append(pospath)
+                            except Exception as e:
+                                self.report({'ERROR'}, f"Could not export position data for object {obj.name}: {e}")
+                            try:
+                                if data.export_rotation:
+                                    rotpath = paths.export_object_path_curve_rot(obj, data, self)
+                                    exported_rotations.append(rotpath)
+                            except Exception as e:
+                                self.report({'ERROR'}, f"Could not export rotation data for object {obj.name}: {e}")
+                            try:
+                                if data.export_scale:
+                                    scalepath = paths.export_object_path_curve_scale(obj, data, self)
+                                    exported_scales.append(scalepath)
+                            except Exception as e:
+                                self.report({'ERROR'}, f"Could not export scale data for object {obj.name}: {e}")
+                        elif data.path_type == 'Keyframes':
+                            if data.keyframe_type == 'Position':
+                                pospath = paths.export_object_keyframes_pos(obj, data, self)
                                 exported_positions.append(pospath)
-                        except Exception as e:
-                            self.report({'ERROR'}, f"Could not export position data for object {obj.name}: {e}")
-                        try:
-                            if data.export_rotation:
-                                rotpath = paths.export_object_path_curve_rot(obj, data, self)
+                            elif data.keyframe_type == 'Rotation':
+                                rotpath = paths.export_object_keyframes_rot(obj, data, self)
                                 exported_rotations.append(rotpath)
-                        except Exception as e:
-                            self.report({'ERROR'}, f"Could not export rotation data for object {obj.name}: {e}")
-                        try:
-                            if data.export_scale:
-                                scalepath = paths.export_object_path_curve_scale(obj, data, self)
+                            elif data.keyframe_type == 'Scale':
+                                scalepath = paths.export_object_keyframes_scale(obj, data, self)
                                 exported_scales.append(scalepath)
-                        except Exception as e:
-                            self.report({'ERROR'}, f"Could not export scale data for object {obj.name}: {e}")
+                            pospath = paths.export_object_keyframes_pos(obj, data, self)
+                            exported_positions.append(pospath)
+                        else:
+                            self.report({'INFO'}, f"Skipping export of data {data.point_definition_name} for object {obj.name}, what the heck did you try?")
                     else:
-                        self.report({'INFO'}, f"Skipping export of data {data.point_definition_name} for object {obj.name}")
-
-        file_path = context.scene.vivify_export_path
+                        self.report({'INFO'}, f"Skipped {data.point_definition_name} for {obj.name}")
 
         dict_to_export = map.setup_point_definitions(context.scene.vivify_map_data)
 
@@ -151,8 +161,7 @@ class WM_OT_ExportSelectedPaths(bpy.types.Operator):
         for scale in exported_scales:
             dict_to_export["customData"]["pointDefinitions"].update(scale.get_json_dict())
 
-        with (open(file_path, "w") as f):
-            f.write(json.dumps(dict_to_export))
+        self.report({'INFO'}, f"Exported all paths! Don't forget to save the map file.")
 
         return {'FINISHED'}
 

@@ -1,0 +1,47 @@
+name: Tagged Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  linux-build:
+    name: "Linux Build"
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - name: "checkout-code"
+        uses: actions/checkout@v2
+      - uses: lukka/get-cmake@latest
+      - name: "get-release-tag"
+        run: echo "GIT_TAG=`echo $(git describe --tags --abbrev=0)`" >> $GITHUB_ENV
+      - name: "build"
+        run: ./scripts/build_addon.sh
+      - name: "Upload release"
+        uses: actions/upload-artifact@v4
+        with:
+          name: BlendHeck
+          path: ./dist/*.zip
+
+  create-release:
+    name: "Create Release"
+    needs: [linux-build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: "checkout-code"
+        uses: actions/checkout@v2
+      - name: "get-linux-client-release"
+        uses: actions/download-artifact@v4
+        with:
+          name: linux_release_client
+          path: ./linux-release-client
+      - name: "create-release"
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: "${{secrets.GITHUB_TOKEN}}"
+          prerelease: false
+          files: |
+            ./BlendHeck/*.zip
+      - name: "Get release tag"
+        run: echo "GIT_TAG=`echo $(git describe --tags --abbrev=0)`" >> $GITHUB_ENV

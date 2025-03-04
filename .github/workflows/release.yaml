@@ -16,6 +16,10 @@ jobs:
       - uses: lukka/get-cmake@latest
       - name: "get-release-tag"
         run: echo "GIT_TAG=`echo $(git describe --tags --abbrev=0)`" >> $GITHUB_ENV
+      - name: "install uv"
+        run: pip install uv
+      - name: "Setup project"
+        run: uv sync
       - name: "build"
         run: ./scripts/build_addon.sh
       - name: "Upload release"

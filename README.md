@@ -1,51 +1,87 @@
-# Blender Add-on Template
+# BlendHeck
 
-This is a template for creating Blender add-ons. It uses [uv](https://github.com/astral-sh/uv) to manage dependencies and virtual environments.
+This is a Blender Addon to work with Vivify (for now), a Beat Saber mod made by [Aeroluna](https://github.com/aeroluna)
 
-## Getting Started
+I work on this addon on my **free time**, so don't expect it to be perfect right now (as it is the first release).
 
-1. Change names and info in the following files (don't forget the copyright headers):
-  - `pyproject.toml` (including the path in the `[tool.hatch.version]` section)
-  - `my_addon/__init__.py`
-  - `my_addon/auto_load.py` (copyright header only)
-  - `my_addon/panel_mypanel.py`
+Feel free to open an issue if you find a bug or have a suggestion, I will try to work on it when I have time.
 
-2. Rename the `my_addon` directory to the name of your add-on. It should match the name in `pyproject.toml`
+## Installation
 
-3. Install [uv](https://github.com/astral-sh/uv) and run `uv sync` to initialize the virtual environment and install the dependencies:
-
-```bash
-uv sync
+Download the latest release from the [releases page](https://github.com/M4NIK0/BlendHeck) and install it in Blender:\
+```
+Edit -> Preferences -> Add-ons -> Install from disk (from the top right corner)
+Select the downloaded zip file -> Enable the Add-on (if not already enabled at install)
 ```
 
-## Developing your Add-on
+## Main panel
 
-1. Activate the virtual environment:
+In the main viewport, on the right, you will find a new panel called "Vivify".
 
-```bash
-source .venv/bin/activate
-```
+![Vivify main panel](img/vivify_panel.png)
 
-2. Open your editor and start developing your add-on. Preferably, start your editor from inside of the virtualenv shell so that your editor's LSP is aware of the virtual environment and dependencies.
-  - For Neovim, the [`blender.nvim`](https://github.com/b0o/blender.nvim) plugin is recommended.
-  - For VSCode, the [`blender_vscode`](https://github.com/JacquesLucke/blender_vscode) extension is recommended.
+The panel provides the following options:
+- Add custom path data for the add-on to use for future export
+- Export all paths from the scene to the map
+- Export all paths from selected objects to the map
+- Select the target map file
+- Load the target map file (see all defined paths in pointsDefinitions)
+- Save the target map file
+- Enable/Disable save on blend file save (requires restart of Blender to take effect for now -_-)
 
-## Packaging
+## Path properties
 
-When you are ready to package your add-on for distribution, run the following command:
+This panel consists of the following properties for each object and their paths:
 
-```bash
-./scripts/build.sh
-```
+![Vivify paths properties](img/vivify_paths.png)
 
-This will create a zip file in the `dist` directory which users can install in Blender.
+### What kind of path should I use?
 
-## Notes
+It depends on what you need, if you have a series of keyframes (you should read Blender documentation and play with it a bit if you don't know what keyframes are) you can use the "Keyframes" path, it will mark a series of keyframes (for a single property) as a path.
 
-- The `my_addon/auto_load.py` file is a helper which automatically discovers, registers, and unregisters your add-on classes. If you prefer a simpler approach, you can remove this file and manually register/unregister your add-on classes in the `register` and `unregister` functions in `my_addon/__init__.py`.
+- Start frame/End frame: The range of frames to consider for the path
+- Property: The property to consider for the path (Position/Rotation/Scale)
+- Export: If the path should be exported to the map (it will not export or update anything if this is disabled)
+
+If you use a curve or a complex path with some weird shape or some specific interpolation, you can use the "Curve/Custom" path and configure it, it will take a series of evenly spaced points from the curve and use them as a path.
+
+- Start frame/End frame: The range of frames to consider for the path
+- Steps: The number of points to take from the curve (more points means a more accurate path but also more points to process)
+- Export: If the path should be exported to the map (it will not export or update anything if this is disabled)
+- Export Position/Rotation/Scale: If the path should be exported for the given property (Position/Rotation/Scale)
+
+For example, if you want to export a custom path/curve with only the position, you can disable the other properties.
+
+### Per object path properties
+
+An object can have multiple paths, each path can be any of the previously mentioned types and have different properties (such as start and end frame...).
+
+## Map data
+
+Once a map is loaded, you can manipulate (mostly see and delete for now) all pointsDefinitions in the map:
+
+![Vivify map data](img/vivify_map_data.png)
+
+- Remove the selected path with the remove "X" button
+- Preview the selected path with the "Preview" button (it will show the path in the 3D viewport)\
+--> **PREVIEW IS NOT IMPLEMENTED YET** <--
+
+### Exporting paths
+
+Once your paths are defined, you can export them to the currently loaded map file with the "Export all paths" (or "Export selected paths) button.
+
+Once your paths are exported, you **must** save the map file with the "Save map file" button (or save the blend file if you have enabled the "Save on blend file save" option).
+
+## Known issues
+
+- The preview button is not implemented yet (*i'm lazy*, or simply work on my **free time**)
+- The "Save on blend file save" option requires a restart of Blender to take effect (it's a limitation of the current implementation, maybe because *i'm dumb*)
 
 ## License
 
-Blender Add-on Template &copy; 2024 Maddison Hellstrom
+This add-on is licensed under the GNU General Public License v2.0 or later and is based on the Blender Add-on Template by Maddison Hellstrom.
 
-GNU General Public License v2.0 or later
+## Credits
+
+- [Aeroluna](https://github.com/aeroluna) (Vivify mod author)
+- [Swifter](https://github.com/Swifter1243) (Remapper author and providing really useful information and examples)

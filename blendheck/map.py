@@ -81,6 +81,7 @@ class WM_OT_SaveMapData(bpy.types.Operator):
             return {'CANCELLED'}
         with open(context.scene.vivify_export_path, "w") as file:
             file.write(json.dumps(context.scene.vivify_map_data))
+        self.report({'INFO'}, "Map data saved")
         return {'FINISHED'}
 
 class MYADDON_PT_MapDataPanel(bpy.types.Panel):

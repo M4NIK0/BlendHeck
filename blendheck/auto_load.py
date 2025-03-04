@@ -57,8 +57,9 @@ def register():
         description="Path to export the data",
         subtype='FILE_PATH',
     )
-    bpy.app.handlers.load_pre.append(handlers.load_map_handler)
+    bpy.app.handlers.save_post.append(handlers.save_map_handler)
     bpy.types.Scene.vivify_map_data = {}
+    bpy.types.Scene.vivify_save_map_data_with_blend = bpy.props.BoolProperty()
     if ordered_classes is not None:
         for cls in ordered_classes:
             bpy.utils.register_class(cls)

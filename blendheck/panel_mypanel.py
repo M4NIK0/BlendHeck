@@ -87,10 +87,16 @@ class WM_OT_ExportPaths(bpy.types.Operator):
         dict_to_export = map.setup_point_definitions(context.scene.vivify_map_data)
 
         for pos in exported_positions:
+            if pos is None:
+                continue
             dict_to_export["customData"]["pointDefinitions"].update(pos.get_json_dict())
         for rot in exported_rotations:
+            if rot is None:
+                continue
             dict_to_export["customData"]["pointDefinitions"].update(rot.get_json_dict())
         for scale in exported_scales:
+            if scale is None:
+                continue
             dict_to_export["customData"]["pointDefinitions"].update(scale.get_json_dict())
 
         self.report({'INFO'}, f"Exported all paths! Don't forget to save the map file.")
@@ -155,10 +161,16 @@ class WM_OT_ExportSelectedPaths(bpy.types.Operator):
         dict_to_export = map.setup_point_definitions(context.scene.vivify_map_data)
 
         for pos in exported_positions:
+            if pos is None:
+                continue
             dict_to_export["customData"]["pointDefinitions"].update(pos.get_json_dict())
         for rot in exported_rotations:
+            if rot is None:
+                continue
             dict_to_export["customData"]["pointDefinitions"].update(rot.get_json_dict())
         for scale in exported_scales:
+            if scale is None:
+                continue
             dict_to_export["customData"]["pointDefinitions"].update(scale.get_json_dict())
 
         self.report({'INFO'}, f"Exported all paths! Don't forget to save the map file.")

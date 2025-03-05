@@ -28,12 +28,16 @@ bl_info = {
 
 # Wrap in try-except here so that we can use hatch's dynamic version detection
 # without this failing. See the `[tool.hatch.version]` section in `pyproject.toml`.
-from . import auto_load
 
-auto_load.init()
+try:
+    from . import auto_load
 
-def register():
-    auto_load.register()
+    auto_load.init()
 
-def unregister():
-    auto_load.unregister()
+    def register():
+        auto_load.register()
+
+    def unregister():
+        auto_load.unregister()
+except ImportError:
+    pass

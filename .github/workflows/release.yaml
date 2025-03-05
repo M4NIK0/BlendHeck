@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - name: "checkout-code"
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: "get-release-tag"
         run: echo "GIT_TAG=`echo $(git describe --tags --abbrev=0)`" >> $GITHUB_ENV
       - name: "install uv"
@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "checkout-code"
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: "get-release"
         uses: actions/download-artifact@v4
         with:

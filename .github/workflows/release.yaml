@@ -37,8 +37,8 @@ jobs:
       - name: "get-linux-client-release"
         uses: actions/download-artifact@v4
         with:
-          name: linux_release_client
-          path: ./linux-release-client
+          name: BlendHeck
+          path: ./BlendHeck
       - name: "create-release"
         uses: marvinpinto/action-automatic-releases@latest
         with:

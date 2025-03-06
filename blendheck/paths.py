@@ -257,7 +257,7 @@ def export_object_keyframes_rot(obj, path: props.VivifyProp, operator=None):
     for point_x in extracted_points_x:
         point_y = next((x for x in extracted_points_y if x["time"] == point_x["time"]), None)
         point_z = next((x for x in extracted_points_z if x["time"] == point_x["time"]), None)
-        points.append(Point(x=point_x["value"], y=point_y["value"], z=point_z["value"], time=(point_x["time"] - min) / (max - min)))
+        points.append(Point(x=point_x["value"] / 3.14159265359 * 180, y=point_y["value"] / 3.14159265359 * 180, z=point_z["value"] / 3.14159265359 * 180, time=(point_x["time"] - min) / (max - min)))
 
     if operator:
         operator.report({'INFO'}, f"Exported {len(points)} points for object {obj.name} with position keyframes {path.point_definition_name}")

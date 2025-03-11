@@ -8,7 +8,8 @@ Feel free to open an issue if you find a bug or have a suggestion, I will try to
 
 ## Installation
 
-Download the latest release from the [releases page](https://github.com/M4NIK0/BlendHeck) and install it in Blender:\
+Download the latest release from the [releases page](https://github.com/M4NIK0/BlendHeck) and install it in Blender:
+
 ```
 Edit -> Preferences -> Add-ons -> Install from disk (from the top right corner)
 Select the downloaded zip file -> Enable the Add-on (if not already enabled at install)

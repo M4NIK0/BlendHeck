@@ -57,6 +57,11 @@ def register():
         description="Path to export the data",
         subtype='FILE_PATH',
     )
+    bpy.types.Scene.vivify_convert_coordinates = bpy.props.BoolProperty(
+        name="Convert Coordinates",
+        description="Convert the coordinates to the Unity coordinates system (you might need this)",
+        default=True,
+    )
     bpy.app.handlers.save_post.append(handlers.save_map_handler)
     bpy.types.Scene.vivify_map_data = {}
     bpy.types.Scene.vivify_save_map_data_with_blend = bpy.props.BoolProperty()

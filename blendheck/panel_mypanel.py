@@ -253,6 +253,7 @@ class MYADDON_PT_VivifyPanel(bpy.types.Panel):
         layout.operator("wm.vivify_load_map_file", text="Load Map File")
         layout.operator("wm.vivify_save_map_data", text="Save Map Data")
         layout.prop(context.scene, "vivify_save_map_data_with_blend", text="Save Map Data With Blend File")
+        layout.prop(context.scene, "vivify_convert_coordinates", text="Convert to Unity Coordinates")
         layout.label(text=f"{map.get_point_definitions(context.scene.vivify_map_data)}")
 
 class MYADDON_PT_VivifyPathsPanel(bpy.types.Panel):

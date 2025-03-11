@@ -23,6 +23,15 @@ class Point:
     def get_json_list(self):
         return [self.x, self.y, self.z] + ([self.time] if self.time is not None else []) + ([self.easing] if self.easing else [])
 
+    def get_converted_position_to_unity(self):
+        return Point(x=self.x, y=self.z, z=-self.y, precision=self.precision, easing=self.easing, time=self.time)
+
+    def get_converted_rotation_to_unity(self):
+        return Point(x=-self.x, y=self.z, z=-self.y, precision=self.precision, easing=self.easing, time=self.time)
+
+    def get_converted_scale_to_unity(self):
+        return Point(x=self.x, y=self.z, z=self.y, precision=self.precision, easing=self.easing, time=self.time)
+
 class PositionPath:
     points: list[Point] = []
     name: str = "Animation"
@@ -36,6 +45,9 @@ class PositionPath:
 
     def get_json_dict(self):
         return {self.name: [p.get_json_list() for p in self.points]}
+
+    def get_unity_json_dict(self):
+        return {self.name: [p.get_converted_position_to_unity().get_json_list() for p in self.points]}
 
 class RotationPath:
     points: list[Point] = []
@@ -51,6 +63,9 @@ class RotationPath:
     def get_json_dict(self):
         return {self.name: [p.get_json_list() for p in self.points]}
 
+    def get_unity_json_dict(self):
+        return {self.name: [p.get_converted_rotation_to_unity().get_json_list() for p in self.points]}
+
 class ScalePath:
     points: list[Point] = []
     name: str = "Animation"
@@ -64,6 +79,9 @@ class ScalePath:
 
     def get_json_dict(self):
         return {self.name: [p.get_json_list() for p in self.points]}
+
+    def get_unity_json_dict(self):
+        return {self.name: [p.get_converted_scale_to_unity().get_json_list() for p in self.points]}
 
 def export_object_path_curve_pos(obj, path: props.VivifyProp, operator=None):
     localtransforms = False # TODO: add some stuff to the panel parameters

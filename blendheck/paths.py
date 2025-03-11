@@ -187,11 +187,6 @@ def export_object_keyframes_pos(obj, path: props.VivifyProp, operator=None):
             operator.report({'ERROR'}, "Start frame must be less than end frame")
         return None
 
-    if int((max - min) / path.steps) == 0:
-        if operator:
-            operator.report({'ERROR'}, "Steps must be less than the range of frames")
-        return None
-
     if obj.animation_data is None or obj.animation_data.action is None:
         if operator:
             operator.report({'ERROR'}, "No animation data found for object")
@@ -241,11 +236,6 @@ def export_object_keyframes_rot(obj, path: props.VivifyProp, operator=None):
             operator.report({'ERROR'}, "Start frame must be less than end frame")
         return None
 
-    if int((max - min) / path.steps) == 0:
-        if operator:
-            operator.report({'ERROR'}, "Steps must be less than the range of frames")
-        return None
-
     if obj.animation_data is None or obj.animation_data.action is None:
         if operator:
             operator.report({'ERROR'}, "No animation data found for object")
@@ -293,11 +283,6 @@ def export_object_keyframes_scale(obj, path: props.VivifyProp, operator=None):
     if min > max:
         if operator:
             operator.report({'ERROR'}, "Start frame must be less than end frame")
-        return None
-
-    if int((max - min) / path.steps) == 0:
-        if operator:
-            operator.report({'ERROR'}, "Steps must be less than the range of frames")
         return None
 
     if obj.animation_data is None or obj.animation_data.action is None:

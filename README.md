@@ -14,11 +14,11 @@ Edit -> Preferences -> Add-ons -> Install from disk (from the top right corner)
 Select the downloaded zip file -> Enable the Add-on (if not already enabled at install)
 ```
 
-## Main panel
+## Quick start
+
+All documentation is available in the repo [wiki](https://github.com/M4NIK0/BlendHeck/wiki), but here is a quick start guide
 
 In the main viewport, on the right, you will find a new panel called "Vivify".
-
-![Vivify main panel](img/vivify_panel.png)
 
 The panel provides the following options:
 - Add custom path data for the add-on to use for future export
@@ -29,13 +29,11 @@ The panel provides the following options:
 - Save the target map file
 - Enable/Disable save on blend file save (requires restart of Blender to take effect for now -_-)
 
-## Path properties
+### Path properties
 
 This panel consists of the following properties for each object and their paths:
 
-![Vivify paths properties](img/vivify_paths.png)
-
-### What kind of path should I use?
+#### What kind of path should I use?
 
 It depends on what you need, if you have a series of keyframes (you should read Blender documentation and play with it a bit if you don't know what keyframes are) you can use the "Keyframes" path, it will mark a series of keyframes (for a single property) as a path.
 
@@ -52,21 +50,15 @@ If you use a curve or a complex path with some weird shape or some specific inte
 
 For example, if you want to export a custom path/curve with only the position, you can disable the other properties.
 
-### Per object path properties
-
-An object can have multiple paths, each path can be any of the previously mentioned types and have different properties (such as start and end frame...).
-
-## Map data
+### Map data
 
 Once a map is loaded, you can manipulate (mostly see and delete for now) all pointsDefinitions in the map:
 
-![Vivify map data](img/vivify_map_data.png)
-
 - Remove the selected path with the remove "X" button
 - Preview the selected path with the "Preview" button (it will show the path in the 3D viewport)\
---> **PREVIEW IS NOT IMPLEMENTED YET** <--
+--> **PREVIEW IS NOT IMPLEMENTED YET AS WELL AS PATH EDIT** <--
 
-### Exporting paths
+#### Exporting paths
 
 Once your paths are defined, you can export them to the currently loaded map file with the "Export all paths" (or "Export selected paths) button.
 

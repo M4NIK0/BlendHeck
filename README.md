@@ -6,6 +6,8 @@ I work on this addon on my **free time**, so don't expect it to be perfect right
 
 Feel free to open an issue if you find a bug or have a suggestion, I will try to work on it when I have time.
 
+**Please take time to read the whole [wiki](https://github.com/M4NIK0/BlendHeck/wiki) if you are unsure about how to use the add-on.**
+
 ## Installation
 
 Download the latest release from the [releases page](https://github.com/M4NIK0/BlendHeck) and install it in Blender:

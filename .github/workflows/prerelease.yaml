@@ -3,9 +3,7 @@ name: Tagged Release
 on:
   push:
     tags:
-      - 'v*.*.*'
-    paths-ignore:
-      - '**/*-pre*'
+      - 'v*.*.*-pre*'
 
 jobs:
   linux-build:
@@ -45,7 +43,7 @@ jobs:
         uses: marvinpinto/action-automatic-releases@latest
         with:
           repo_token: "${{secrets.GITHUB_TOKEN}}"
-          prerelease: false
+          prerelease: true
           files: |
             ./BlendHeck/*.zip
       - name: "Get release tag"

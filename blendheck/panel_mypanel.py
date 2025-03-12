@@ -61,6 +61,7 @@ class MYADDON_PT_VivifyPanel(bpy.types.Panel):
         layout.prop(context.scene, "vivify_save_map_data_with_blend", text="Save Map Data With Blend File")
         layout.prop(context.scene, "vivify_convert_coordinates", text="Convert to Unity Coordinates")
         layout.label(text=f"{map.get_point_definitions(context.scene.vivify_map_data)}")
+        layout.operator("wm.display_preview_menu", text="Preview paths")
 
 class MYADDON_PT_VivifyPathsPanel(bpy.types.Panel):
     bl_label = "Paths"

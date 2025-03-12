@@ -250,3 +250,20 @@ class WM_OT_RemovePathData(bpy.types.Operator):
             self.report({'ERROR'}, "No valid object selected or object doesn't have my_data attribute")
             return {'CANCELLED'}
         return {'FINISHED'}
+
+class WM_OT_DisplayPreviewMenu(bpy.types.Operator):
+    bl_idname = "wm.display_preview_menu"
+    bl_label = "Display Sample Menu"
+
+    def execute(self, context):
+        bpy.ops.wm.call_menu(name="OBJECT_MT_preview_menu")
+        return {'FINISHED'}
+
+class WM_OT_PreviewPaths(bpy.types.Operator):
+    bl_idname = "wm.vivify_preview_paths"
+    bl_label = "Preview Paths"
+    bl_category = "Vivify"
+
+    def execute(self, context):
+        self.report({'INFO'}, "Not implemented yet")
+        return {'FINISHED'}

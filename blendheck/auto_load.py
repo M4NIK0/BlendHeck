@@ -62,6 +62,51 @@ def register():
         description="Convert the coordinates to the Unity coordinates system (you might need this)",
         default=True,
     )
+    bpy.types.Scene.vivify_preview_path_pos = bpy.props.EnumProperty(
+        name="Position Path to preview",
+        description="Position Path to preview",
+        items=[]
+    )
+    bpy.types.Scene.vivify_preview_path_start_frame_pos = bpy.props.IntProperty(
+        name="Start Frame",
+        description="Start Frame",
+        default=1,
+    )
+    bpy.types.Scene.vivify_preview_path_end_frame_pos = bpy.props.IntProperty(
+        name="End Frame",
+        description="End Frame",
+        default=100,
+    )
+    bpy.types.Scene.vivify_preview_path_rot = bpy.props.EnumProperty(
+        name="Rotation Path to preview",
+        description="Rotation Path to preview",
+        items=[]
+    )
+    bpy.types.Scene.vivify_preview_path_start_frame_rot = bpy.props.IntProperty(
+        name="Start Frame",
+        description="Start Frame",
+        default=1,
+    )
+    bpy.types.Scene.vivify_preview_path_end_frame_rot = bpy.props.IntProperty(
+        name="End Frame",
+        description="End Frame",
+        default=100,
+    )
+    bpy.types.Scene.vivify_preview_path_scale = bpy.props.EnumProperty(
+        name="Scale Path to preview",
+        description="Scale Path to preview",
+        items=[]
+    )
+    bpy.types.Scene.vivify_preview_path_start_frame_scale = bpy.props.IntProperty(
+        name="Start Frame",
+        description="Start Frame",
+        default=1,
+    )
+    bpy.types.Scene.vivify_preview_path_end_frame_scale = bpy.props.IntProperty(
+        name="End Frame",
+        description="End Frame",
+        default=100,
+    )
     bpy.app.handlers.save_post.append(handlers.save_map_handler)
     bpy.types.Scene.vivify_map_data = {}
     bpy.types.Scene.vivify_save_map_data_with_blend = bpy.props.BoolProperty()

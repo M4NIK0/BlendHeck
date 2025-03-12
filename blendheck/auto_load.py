@@ -26,6 +26,7 @@ from pathlib import Path
 from . import panel_mypanel
 from . import map
 from . import handlers
+from . import menus
 
 import bpy
 
@@ -65,7 +66,7 @@ def register():
     bpy.types.Scene.vivify_preview_path_pos = bpy.props.EnumProperty(
         name="Position Path to preview",
         description="Position Path to preview",
-        items=[]
+        items=menus.enum_path_items,
     )
     bpy.types.Scene.vivify_preview_path_start_frame_pos = bpy.props.IntProperty(
         name="Start Frame",
@@ -78,9 +79,9 @@ def register():
         default=100,
     )
     bpy.types.Scene.vivify_preview_path_rot = bpy.props.EnumProperty(
-        name="Rotation Path to preview",
-        description="Rotation Path to preview",
-        items=[]
+        name="Position Path",
+        description="Select the position path to preview",
+        items=menus.enum_path_items,
     )
     bpy.types.Scene.vivify_preview_path_start_frame_rot = bpy.props.IntProperty(
         name="Start Frame",
@@ -95,7 +96,7 @@ def register():
     bpy.types.Scene.vivify_preview_path_scale = bpy.props.EnumProperty(
         name="Scale Path to preview",
         description="Scale Path to preview",
-        items=[]
+        items=menus.enum_path_items,
     )
     bpy.types.Scene.vivify_preview_path_start_frame_scale = bpy.props.IntProperty(
         name="Start Frame",

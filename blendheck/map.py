@@ -1,6 +1,8 @@
 import bpy
 import json
 
+from . import menus
+
 def get_map_file(path: str) -> dict:
     try:
         with open(path, "r") as file:
@@ -48,6 +50,8 @@ class WM_OT_LoadMapFile(bpy.types.Operator):
         context.scene.vivify_map_data.clear()
         context.scene.vivify_map_data.update(loaded)
         self.report({'INFO'}, "Map file loaded")
+
+        # context.scene.vivify_preview_path_rot = "Default"
 
         return {'FINISHED'}
 

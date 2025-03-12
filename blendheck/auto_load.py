@@ -24,7 +24,7 @@ import pkgutil
 import typing
 from pathlib import Path
 from . import panel_mypanel
-from . import map
+from . import props
 from . import handlers
 from . import menus
 
@@ -35,6 +35,8 @@ __all__ = (
     "register",
     "unregister",
 )
+
+from .props import VivifyPreviewPointPropertyGroup
 
 blender_version = typing.cast(typing.Tuple[int, int, int], bpy.app.version)
 
@@ -68,6 +70,21 @@ def register():
         description="Position Path to preview",
         items=menus.enum_path_items,
     )
+    bpy.types.Scene.vivify_preview_static_pos_x = bpy.props.FloatProperty(
+        name="X",
+        description="X coordinate",
+        default=0.0,
+    )
+    bpy.types.Scene.vivify_preview_static_pos_y = bpy.props.FloatProperty(
+        name="Y",
+        description="Y coordinate",
+        default=0.0,
+    )
+    bpy.types.Scene.vivify_preview_static_pos_z = bpy.props.FloatProperty(
+        name="Z",
+        description="Z coordinate",
+        default=0.0,
+    )
     bpy.types.Scene.vivify_preview_path_start_frame_pos = bpy.props.IntProperty(
         name="Start Frame",
         description="Start Frame",
@@ -83,6 +100,21 @@ def register():
         description="Select the position path to preview",
         items=menus.enum_path_items,
     )
+    bpy.types.Scene.vivify_preview_static_rot_x = bpy.props.FloatProperty(
+        name="X",
+        description="X rotation",
+        default=0.0,
+    )
+    bpy.types.Scene.vivify_preview_static_rot_y = bpy.props.FloatProperty(
+        name="Y",
+        description="Y rotation",
+        default=0.0,
+    )
+    bpy.types.Scene.vivify_preview_static_rot_z = bpy.props.FloatProperty(
+        name="Z",
+        description="Z rotation",
+        default=0.0,
+    )
     bpy.types.Scene.vivify_preview_path_start_frame_rot = bpy.props.IntProperty(
         name="Start Frame",
         description="Start Frame",
@@ -97,6 +129,21 @@ def register():
         name="Scale Path to preview",
         description="Scale Path to preview",
         items=menus.enum_path_items,
+    )
+    bpy.types.Scene.vivify_preview_static_scale_x = bpy.props.FloatProperty(
+        name="X",
+        description="X scale",
+        default=0.0,
+    )
+    bpy.types.Scene.vivify_preview_static_scale_y = bpy.props.FloatProperty(
+        name="Y",
+        description="Y scale",
+        default=0.0,
+    )
+    bpy.types.Scene.vivify_preview_static_scale_z = bpy.props.FloatProperty(
+        name="Z",
+        description="Z scale",
+        default=0.0,
     )
     bpy.types.Scene.vivify_preview_path_start_frame_scale = bpy.props.IntProperty(
         name="Start Frame",

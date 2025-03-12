@@ -26,3 +26,8 @@ class VivifyProp(bpy.types.PropertyGroup):
 
 class VivifyPropArray(bpy.types.PropertyGroup):
     my_data_array: bpy.props.CollectionProperty(type=VivifyProp)
+
+class VivifyPreviewPointPropertyGroup(bpy.types.PropertyGroup):
+    x: bpy.props.FloatProperty(name="X", description="X coordinate", default=0.0)
+    y: bpy.props.FloatProperty(name="Y", description="Y coordinate", default=0.0)
+    z: bpy.props.FloatProperty(name="Z", description="Z coordinate", default=0.0)

@@ -9,6 +9,7 @@ on:
 
 jobs:
   linux-build:
+    if: "!contains(github.ref, '-pre')"
     name: "Linux Build"
     runs-on: "ubuntu-latest"
 

@@ -20,7 +20,7 @@ bl_info = {
     "author": "Nyaniko~",
     "description": "A Vivify preview/editor for Blender",
     "blender": (4, 3, 0),
-    "version": (0, 1, 0),
+    "version": (0, 1, 1),
     "location": "Sidebar",
     "category": "Object",
     "warning": "",

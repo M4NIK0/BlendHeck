@@ -60,7 +60,7 @@ def register():
         description="Path to export the data",
         subtype='FILE_PATH',
     )
-    bpy.types.Scene.vivify_convert_coordinates = bpy.props.BoolProperty(
+    bpy.types.Scene.vivify_convert_export_coordinates = bpy.props.BoolProperty(
         name="Convert Coordinates",
         description="Convert the coordinates to the Unity coordinates system (you might need this)",
         default=True,
@@ -69,6 +69,11 @@ def register():
         name="Position Path to preview",
         description="Position Path to preview",
         items=menus.enum_path_items,
+    )
+    bpy.types.Scene.vivify_convert_preview_coordinates = bpy.props.BoolProperty(
+        name="Convert Coordinates",
+        description="Convert the coordinates from the Unity coordinates system (you might need this)",
+        default=True,
     )
     bpy.types.Scene.vivify_preview_static_pos_x = bpy.props.FloatProperty(
         name="X",

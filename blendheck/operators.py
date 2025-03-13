@@ -85,21 +85,21 @@ class WM_OT_ExportPaths(bpy.types.Operator):
         for pos in exported_positions:
             if pos is None:
                 continue
-            if context.scene.vivify_convert_coordinates:
+            if context.scene.vivify_convert_export_coordinates:
                 dict_to_export["customData"]["pointDefinitions"].update(pos.get_unity_json_dict())
             else:
                 dict_to_export["customData"]["pointDefinitions"].update(pos.get_json_dict())
         for rot in exported_rotations:
             if rot is None:
                 continue
-            if context.scene.vivify_convert_coordinates:
+            if context.scene.vivify_convert_export_coordinates:
                 dict_to_export["customData"]["pointDefinitions"].update(rot.get_unity_json_dict())
             else:
                 dict_to_export["customData"]["pointDefinitions"].update(rot.get_json_dict())
         for scale in exported_scales:
             if scale is None:
                 continue
-            if context.scene.vivify_convert_coordinates:
+            if context.scene.vivify_convert_export_coordinates:
                 dict_to_export["customData"]["pointDefinitions"].update(scale.get_unity_json_dict())
             else:
                 dict_to_export["customData"]["pointDefinitions"].update(scale.get_json_dict())
@@ -186,21 +186,21 @@ class WM_OT_ExportSelectedPaths(bpy.types.Operator):
         for pos in exported_positions:
             if pos is None:
                 continue
-            if context.scene.vivify_convert_coordinates:
+            if context.scene.vivify_convert_export_coordinates:
                 dict_to_export["customData"]["pointDefinitions"].update(pos.get_unity_json_dict())
             else:
                 dict_to_export["customData"]["pointDefinitions"].update(pos.get_json_dict())
         for rot in exported_rotations:
             if rot is None:
                 continue
-            if context.scene.vivify_convert_coordinates:
+            if context.scene.vivify_convert_export_coordinates:
                 dict_to_export["customData"]["pointDefinitions"].update(rot.get_unity_json_dict())
             else:
                 dict_to_export["customData"]["pointDefinitions"].update(rot.get_json_dict())
         for scale in exported_scales:
             if scale is None:
                 continue
-            if context.scene.vivify_convert_coordinates:
+            if context.scene.vivify_convert_export_coordinates:
                 dict_to_export["customData"]["pointDefinitions"].update(scale.get_unity_json_dict())
             else:
                 dict_to_export["customData"]["pointDefinitions"].update(scale.get_json_dict())
@@ -266,4 +266,11 @@ class WM_OT_PreviewPaths(bpy.types.Operator):
 
     def execute(self, context):
         self.report({'INFO'}, "Not implemented yet")
+        if len(context.selected_objects) == 0:
+            self.report({'ERROR'}, "No objects selected")
+            return {'CANCELLED'}
+        if len(context.selected_objects) != 1:
+            self.report({'ERROR'}, "Please select only one object")
+            return {'CANCELLED'}
+
         return {'FINISHED'}

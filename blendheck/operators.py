@@ -261,7 +261,7 @@ class WM_OT_DisplayPreviewMenu(bpy.types.Operator):
 
 class WM_OT_PreviewPaths(bpy.types.Operator):
     bl_idname = "wm.vivify_preview_paths"
-    bl_label = "Preview Paths"
+    bl_label = "Apply Paths"
     bl_category = "Vivify"
 
     def execute(self, context):

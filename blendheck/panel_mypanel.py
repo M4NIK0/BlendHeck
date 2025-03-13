@@ -63,10 +63,10 @@ class MYADDON_PT_VivifyPanel(bpy.types.Panel):
         layout.label(text=f"{map.get_point_definitions(context.scene.vivify_map_data)}")
 
 class MYADDON_PT_VivifyPathsPanel(bpy.types.Panel):
-    bl_label = "Paths"
+    bl_label = "Object Paths"
     bl_idname = "MYADDON_PT_VivifyPathsPanel"
     bl_space_type = "VIEW_3D"
-    bl_region_type = "UI"
+    bl_region_type = "UI"''
     bl_category = "Vivify"
 
     def draw(self, context):

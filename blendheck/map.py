@@ -65,16 +65,6 @@ class WM_OT_RemoveMapPath(bpy.types.Operator):
         context.scene.vivify_map_data["customData"]["pointDefinitions"].pop(self.path_key)
         return {'FINISHED'}
 
-class WM_OT_PreviewMapPath(bpy.types.Operator):
-    bl_idname = "wm.vivify_preview_map_path_data"
-    bl_label = "Preview Map Path Data"
-
-    path_key: bpy.props.StringProperty()
-
-    def execute(self, context):
-        self.report({'INFO'}, f"Not implemented yet")
-        return {'FINISHED'}
-
 class WM_OT_SaveMapData(bpy.types.Operator):
     bl_idname = "wm.vivify_save_map_data"
     bl_label = "Save Map Data"
@@ -89,23 +79,19 @@ class WM_OT_SaveMapData(bpy.types.Operator):
         return {'FINISHED'}
 
 class MYADDON_PT_MapDataPanel(bpy.types.Panel):
-    bl_label = "Map Data"
+    bl_label = "Map Point Definitions"
     bl_idname = "MYADDON_PT_MapDataPanel"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
-    bl_category = "Vivify"
+    bl_category = "Beatmap Data"
 
     def draw(self, context):
         layout = self.layout
-        layout.label(text=f"Map points definitions")
 
         for pd in get_point_definitions(context.scene.vivify_map_data):
             box = layout.box()
             row = box.row()
             row.label(text=pd)
-
-            preview_button = row.operator("wm.vivify_preview_map_path_data", text="", icon="RESTRICT_VIEW_OFF")
-            preview_button.path_key = pd
 
             remove_button = row.operator("wm.vivify_remove_map_path_data", text="", icon="X")
             remove_button.path_key = pd

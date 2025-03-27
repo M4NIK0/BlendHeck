@@ -265,12 +265,24 @@ class WM_OT_PreviewPaths(bpy.types.Operator):
     bl_category = "Vivify"
 
     def execute(self, context):
-        self.report({'INFO'}, "Not implemented yet")
         if len(context.selected_objects) == 0:
             self.report({'ERROR'}, "No objects selected")
             return {'CANCELLED'}
         if len(context.selected_objects) != 1:
             self.report({'ERROR'}, "Please select only one object")
             return {'CANCELLED'}
+
+        pos_path = context.scene.vivify_map_data["customData"]["pointDefinitions"][context.scene.vivify_preview_path_pos] if context.scene.vivify_preview_path_pos != "[ No path ]" else None
+        rot_path = context.scene.vivify_map_data["customData"]["pointDefinitions"][context.scene.vivify_preview_path_rot] if context.scene.vivify_preview_path_rot != "[ No path ]" else None
+        scale_path = context.scene.vivify_map_data["customData"]["pointDefinitions"][context.scene.vivify_preview_path_scale] if context.scene.vivify_preview_path_scale != "[ No path ]" else None
+
+        if pos_path is None:
+            pos_path = [context.scene.vivify_preview_static_pos_x, context.scene.vivify_preview_static_pos_y, context.scene.vivify_preview_static_pos_z]
+        if rot_path is None:
+            rot_path = [context.scene.vivify_preview_static_rot_x, context.scene.vivify_preview_static_rot_y, context.scene.vivify_preview_static_rot_z]
+        if scale_path is None:
+            scale_path = [context.scene.vivify_preview_static_scale_x, context.scene.vivify_preview_static_scale_y, context.scene.vivify_preview_static_scale_z]
+
+        self.report({'INFO'}, f"Applying paths {pos_path}, {rot_path}, {scale_path}")
 
         return {'FINISHED'}

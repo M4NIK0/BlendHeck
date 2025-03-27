@@ -26,10 +26,19 @@ class Point:
     def get_converted_position_to_unity(self):
         return Point(x=self.x, y=self.z, z=-self.y, precision=self.precision, easing=self.easing, time=self.time)
 
+    def get_converted_position_to_blender(self):
+        return Point(x=self.x, y=-self.z, z=self.y, precision=self.precision, easing=self.easing, time=self.time)
+
     def get_converted_rotation_to_unity(self):
         return Point(x=-self.x, y=self.z, z=-self.y, precision=self.precision, easing=self.easing, time=self.time)
 
+    def get_converted_rotation_to_blender(self):
+        return Point(x=-self.x, y=-self.z, z=self.y, precision=self.precision, easing=self.easing, time=self.time)
+
     def get_converted_scale_to_unity(self):
+        return Point(x=self.x, y=self.z, z=self.y, precision=self.precision, easing=self.easing, time=self.time)
+
+    def get_converted_scale_to_blender(self):
         return Point(x=self.x, y=self.z, z=self.y, precision=self.precision, easing=self.easing, time=self.time)
 
 class PositionPath:

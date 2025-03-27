@@ -8,10 +8,13 @@ class WM_OT_ExportPaths(bpy.types.Operator):
     bl_category = "Vivify"
 
     def execute(self, context):
+
+        # check if we have an export path set
         if not context.scene.vivify_export_path:
             self.report({'ERROR'}, "No export path set")
             return {'CANCELLED'}
 
+        # check if we have map data
         if context.scene.vivify_map_data == {}:
             self.report({'ERROR'}, "No map data found")
             return {'CANCELLED'}
@@ -20,10 +23,13 @@ class WM_OT_ExportPaths(bpy.types.Operator):
         exported_rotations = []
         exported_scales = []
 
+        # loop through all objects in the scene
         for obj in bpy.data.objects:
             self.report({'INFO'}, f"Object {obj.name} has {len(obj.my_data.my_data_array)} data items")
+            # check if the object has any data & loop through it
             if len(obj.my_data.my_data_array) > 0:
                 for i, data in enumerate(obj.my_data.my_data_array):
+                    # check if the data should be exported
                     if data.export:
                         self.report({'INFO'}, f"Exporting {data.path_type} {data.point_definition_name} for {obj.name}")
                         if data.path_type == 'Curve/Custom':
@@ -265,6 +271,8 @@ class WM_OT_PreviewPaths(bpy.types.Operator):
     bl_category = "Vivify"
 
     def execute(self, context):
+
+        # check if we have an object selected
         if len(context.selected_objects) == 0:
             self.report({'ERROR'}, "No objects selected")
             return {'CANCELLED'}
@@ -272,17 +280,30 @@ class WM_OT_PreviewPaths(bpy.types.Operator):
             self.report({'ERROR'}, "Please select only one object")
             return {'CANCELLED'}
 
-        pos_path = context.scene.vivify_map_data["customData"]["pointDefinitions"][context.scene.vivify_preview_path_pos] if context.scene.vivify_preview_path_pos != "[ No path ]" else None
-        rot_path = context.scene.vivify_map_data["customData"]["pointDefinitions"][context.scene.vivify_preview_path_rot] if context.scene.vivify_preview_path_rot != "[ No path ]" else None
-        scale_path = context.scene.vivify_map_data["customData"]["pointDefinitions"][context.scene.vivify_preview_path_scale] if context.scene.vivify_preview_path_scale != "[ No path ]" else None
+        pos = None
+        rot = None
+        scale = None
 
-        if pos_path is None:
-            pos_path = [context.scene.vivify_preview_static_pos_x, context.scene.vivify_preview_static_pos_y, context.scene.vivify_preview_static_pos_z]
-        if rot_path is None:
-            rot_path = [context.scene.vivify_preview_static_rot_x, context.scene.vivify_preview_static_rot_y, context.scene.vivify_preview_static_rot_z]
-        if scale_path is None:
-            scale_path = [context.scene.vivify_preview_static_scale_x, context.scene.vivify_preview_static_scale_y, context.scene.vivify_preview_static_scale_z]
+        # check if we have a path to apply
+        if context.scene.vivify_preview_path_pos == "[ No path ]":
+            pos = [context.scene.vivify_preview_static_pos_x, context.scene.vivify_preview_static_pos_y, context.scene.vivify_preview_static_pos_z]
+        if context.scene.vivify_preview_path_pos == "[ No path ]":
+            rot = [context.scene.vivify_preview_static_rot_x, context.scene.vivify_preview_static_rot_y, context.scene.vivify_preview_static_rot_z]
+        if context.scene.vivify_preview_path_pos == "[ No path ]":
+            scale = [context.scene.vivify_preview_static_scale_x, context.scene.vivify_preview_static_scale_y, context.scene.vivify_preview_static_scale_z]
 
-        self.report({'INFO'}, f"Applying paths {pos_path}, {rot_path}, {scale_path}")
+        if pos is None:
+            # map 0 to 1 to frame start to frame end in path
+            frame_start = context.scene.vivify_preview_path_start_frame_pos
+            frame_end = context.scene.vivify_preview_path_end_frame_pos
+            frame_duration = frame_end - frame_start
+
+            converted_path = []
+
+            # get points from path
+            for point_dat in context.scene.vivify_map_data["customData"]["pointDefinitions"][context.scene.vivify_preview_path_pos]:
+                converted_path.append(paths.Point(x=point_dat[0], y=point_dat[1], z=point_dat[2], time=int((point_dat[3] * frame_duration) + frame_start)).get_converted_position_to_blender() if context.scene.vivify_convert_preview_coordinates else paths.Point(x=point_dat[0], y=point_dat[1], z=point_dat[2], time=int((point_dat[3] * frame_duration) + frame_start)))
+
+            self.report({'INFO'}, f"Converted path: {converted_path[0].__str__()}")
 
         return {'FINISHED'}

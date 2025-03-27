@@ -16,7 +16,6 @@ class PreviewMenu(bpy.types.Panel):
 
     def draw(self, context):
         layout = self.layout
-        layout.prop(context.scene, "vivify_convert_preview_coordinates")
         layout.label(text="Position Path to apply")
         layout.prop(context.scene, "vivify_preview_path_pos", text="")
         if context.scene.vivify_preview_path_pos != "[ No path ]":
@@ -53,4 +52,5 @@ class PreviewMenu(bpy.types.Panel):
             col.prop(context.scene, "vivify_preview_static_scale_y", text="Y")
             col.prop(context.scene, "vivify_preview_static_scale_z", text="Z")
         layout.separator()
+        layout.prop(context.scene, "vivify_convert_preview_coordinates")
         layout.operator("wm.vivify_preview_paths", text="Apply Paths")
